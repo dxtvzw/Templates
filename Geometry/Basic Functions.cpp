@@ -8,6 +8,10 @@ typedef pair<long long, long long> pll;
 #define pb push_back
 mt19937 rnd;
 
+/*
+    lol
+*/
+
 struct Point {
     ll x, y;
 };
