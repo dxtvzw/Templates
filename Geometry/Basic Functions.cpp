@@ -1,24 +1,42 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
+typedef long double ld;
 typedef pair<int, int> pii;
-typedef pair<long long, long long> pll;
 #define F first
 #define S second
 #define pb push_back
 mt19937 rnd;
 
-/*
-    lol
-*/
+typedef double Type;
 
 struct Point {
-    ll x, y;
+    Type x, y;
 };
 
 struct Line {
-    ll a, b, c;
+    Type a, b, c;
 };
+
+Type dist(Point p, Point q) {
+    return sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
+}
+
+Type dot(Point O, Point p, Point q) {
+    return (p.x - O.x) * (q.x - O.x) + (p.y - O.y) * (q.y - O.y);
+}
+
+Type cross(Point p, Point q) {
+    return p.x * q.y - p.y * q.x;
+}
+
+Type cross(Point O, Point p, Point q) {
+    return cross({p.x - O.x, p.y - O.y}, {q.x - O.x, q.y - O.y});
+}
+
+Type angle(Point O, Point p, Point q) {
+    return acos(dot(O, p, q) / (dist(O, p) * dist(O, q)));
+}
 
 bool parallel(Line p, Line q) {
     return p.a * q.b == p.b * q.a;
@@ -29,40 +47,19 @@ bool cmp_angle(Line p, Line q) {
 }
 
 Line find_line(Point p, Point q) {
-    ll a = p.y - q.y;
-    ll b = q.x - p.x;
-    ll c = p.x * q.y - p.y * q.x;
-    ll gcd = __gcd(a, __gcd(b, c));
+    Type a = p.y - q.y;
+    Type b = q.x - p.x;
+    Type c = p.x * q.y - p.y * q.x;
+    /*
+    // if Type == int or long long
+    Type gcd = __gcd(a, __gcd(b, c));
     if (a / gcd < 0) {
         gcd *= -1;
     }
     return {a / gcd, b / gcd, c / gcd};
+    */
+    return {a, b, c};
 }
-
-////////////////////////////////////// Segment Intersection in 2D //////////////////////////////////////
-bool onSegment(Point p, Point q, Point r) {
-    return q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) && q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y);
-}
-
-int orientation(Point p, Point q, Point r) {
-    int val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-    if (val == 0) return 0;
-    return (val > 0)? 1: 2;
-}
-
-bool doIntersect(Point p1, Point q1, Point p2, Point q2) {
-    int o1 = orientation(p1, q1, p2);
-    int o2 = orientation(p1, q1, q2);
-    int o3 = orientation(p2, q2, p1);
-    int o4 = orientation(p2, q2, q1);
-    if (o1 != o2 && o3 != o4) return 1;
-    if (o1 == 0 && onSegment(p1, p2, q1)) return 1;
-    if (o2 == 0 && onSegment(p1, q2, q1)) return 1;
-    if (o3 == 0 && onSegment(p2, p1, q2)) return 1;
-    if (o4 == 0 && onSegment(p2, q1, q2)) return 1;
-    return 0;
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main() {
     ios_base::sync_with_stdio(0); cin.tie(0);
@@ -70,8 +67,10 @@ int main() {
     freopen("input.txt", "r", stdin);
 #endif
 
+
+
 #ifdef LOCAL
     cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
 #endif
-   return 0;
+    return 0;
 }
