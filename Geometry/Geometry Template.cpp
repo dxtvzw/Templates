@@ -21,9 +21,6 @@ struct Point {
     bool operator==(const Point& q) const {
         return x == q.x && y == q.y;
     }
-    bool operator!=(const Point& q) const {
-        return x != q.x || y != q.y;
-    }
 };
 
 ostream& operator<<(ostream& ostr, const Point& p) {
@@ -35,7 +32,7 @@ struct Line {
 };
 
 ostream& operator<<(ostream& ostr, const Line& l) {
-	return ostr << l.a << " * x + " << l.b << " * y + " << l.c << "\n";
+	return ostr << l.a << " * x + " << l.b << " * y + " << l.c;
 }
 
 Type_1 dot(Point p, Point q) {
@@ -51,7 +48,11 @@ Type_1 cross(Point p, Point q) {
 }
 
 Type_1 cross(Point O, Point p, Point q) {
-    return cross({p.x - O.x, p.y - O.y}, {q.x - O.x, q.y - O.y});
+    return (p.x - O.x) * (q.y - O.y) - (p.y - O.y) * (q.x - O.x);
+}
+
+Type_1 dist2(Point p, Point q) {
+    return (p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y);
 }
 
 Type_2 dist(Point p, Point q) {
@@ -62,21 +63,12 @@ Type_2 angle(Point O, Point p, Point q) {
     return acos(Type_2(dot(O, p, q)) / Type_2(dist(O, p) * dist(O, q)));
 }
 
-bool parallel(Line p, Line q) {
-    return p.a * q.b == p.b * q.a;
-}
-
-bool cmp_angle(Line p, Line q) {
-    return p.a * q.b < p.b * q.a;
-}
-
 Line find_line(Point p, Point q) {
     Type_1 a = p.y - q.y;
     Type_1 b = q.x - p.x;
     Type_1 c = p.x * q.y - p.y * q.x;
     /*
-    // if Type_1 == int or long long
-    Type gcd = __gcd(a, __gcd(b, c));
+    Type_1 gcd = __gcd(a, __gcd(b, c));
     if (a / gcd < 0) {
         gcd *= -1;
     }
