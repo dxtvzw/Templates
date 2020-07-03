@@ -15,11 +15,14 @@ const Type_2 pi = acos(-1);
 
 struct Point {
     Type_1 x, y;
+    void fit() {
+        x *= 2, y *= 2;
+    }
+    Point operator+(const Point& ot) {
+        return {x + ot.x, y + ot.y};
+    }
     bool operator<(const Point& q) const {
         return x < q.x || (x == q.x && y < q.y);
-    }
-    bool operator==(const Point& q) const {
-        return x == q.x && y == q.y;
     }
 };
 
@@ -29,6 +32,16 @@ ostream& operator<<(ostream& ostr, const Point& p) {
 
 struct Line {
     Type_1 a, b, c;
+    void fit() {
+        Type_1 gcd = __gcd(a, __gcd(b, c));
+        a /= gcd, b /= gcd, c /= gcd;
+        if ((a < 0) || (a == 0 && b < 0)) {
+            a *= -1, b *= -1, c *= -1;
+        }
+    }
+    bool operator<(const Line& ot) const {
+        return std::tie(a, b, c) < std::tie(ot.a, ot.b, ot.c);
+    }
 };
 
 ostream& operator<<(ostream& ostr, const Line& l) {
@@ -67,14 +80,15 @@ Line find_line(Point p, Point q) {
     Type_1 a = p.y - q.y;
     Type_1 b = q.x - p.x;
     Type_1 c = p.x * q.y - p.y * q.x;
-    /*
-    Type_1 gcd = __gcd(a, __gcd(b, c));
-    if (a / gcd < 0) {
-        gcd *= -1;
-    }
-    return {a / gcd, b / gcd, c / gcd};
-    */
-    return {a, b, c};
+    Line l = {a, b, c};
+    l.fit();
+    return l;
+}
+
+Line mid_perp(Point p, Point q) {
+    Line l = {2 * (p.x - q.x), 2 * (p.y - q.y), -((p.x - q.x) * (p.x + q.x) + (p.y - q.y) * (p.y + q.y))};
+    l.fit();
+    return l;
 }
 
 Type_2 area(Point A, Point B, Point C) {
