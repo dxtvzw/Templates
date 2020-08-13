@@ -15,20 +15,15 @@ struct Point {
 };
 
 struct Rect {
-    Point ld, ru;
+    int l, r, d, u;
 };
 
-const Rect r_zero = {{0, 0}, {-1, -1}};
+const Rect r_zero = {0, -1, 0, -1};
 
 Rect rect_inter(Rect a, Rect b) {
-    int l = max(a.ld.x, b.ld.x), r = min(a.ru.x, b.ru.x);
-    int d = max(a.ld.y, b.ld.y), u = min(a.ru.y, b.ru.y);
-    if (l <= r && d <= u) {
-        return {{l, d}, {r, u}};
-    }
-    else {
-        return r_zero;
-    }
+    int l = max(a.l, b.l), r = min(a.r, b.r), d = max(a.d, b.d), u = min(a.u, b.u);
+    if (l <= r && d <= u) return {l, r, d, u};
+    else return r_zero;
 }
 
 int main() {
