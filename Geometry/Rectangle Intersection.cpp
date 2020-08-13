@@ -10,10 +10,6 @@ typedef pair<ll, ll> pll;
 #define pb push_back
 mt19937 rnd;
 
-struct Point {
-    int x, y;
-};
-
 struct Rect {
     int l, r, d, u;
 };
