@@ -27,7 +27,7 @@ struct Point {
 };
 
 ostream& operator<<(ostream& ostr, const Point& p) {
-	return ostr << p.x << " " << p.y;
+    return ostr << p.x << " " << p.y;
 }
 
 struct Line {
@@ -45,7 +45,7 @@ struct Line {
 };
 
 ostream& operator<<(ostream& ostr, const Line& l) {
-	return ostr << l.a << " * x + " << l.b << " * y + " << l.c;
+    return ostr << l.a << " * x + " << l.b << " * y + " << l.c;
 }
 
 Type_1 dot(Point p, Point q) {
