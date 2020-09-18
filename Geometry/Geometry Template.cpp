@@ -104,17 +104,17 @@ Type_2 radius(Point A, Point B, Point C) {
 vector<Point> convex_hull(vector<Point> v) {
     int n = v.size(), k = 0;
     if (n < 3) return {};
-    vector<Point> hull(2*n);
+    vector<Point> hull(2 * n);
     sort(v.begin(), v.end());
     for (int i = 0; i < n; i++) {
-        while (k >= 2 && cross(hull[k-2], hull[k-1], v[i]) <= 0) k--;
+        while (k >= 2 && cross(hull[k - 2], hull[k - 1], v[i]) <= 0) k--;
         hull[k++] = v[i];
     }
     for (int i = n - 1, t = k + 1; i > 0; i--) {
-        while (k >= t && cross(hull[k-2], hull[k-1], v[i-1]) <= 0) k--;
-        hull[k++] = v[i-1];
+        while (k >= t && cross(hull[k - 2], hull[k - 1], v[i - 1]) <= 0) k--;
+        hull[k++] = v[i - 1];
     }
-    hull.resize(k-1);
+    hull.resize(k - 1);
     return hull;
 }
 

@@ -8,7 +8,8 @@ typedef pair<int, int> pii;
 #define pb push_back
 mt19937 rnd;
 
-void delete_copies(vector<int>& a) {
+template <typename T>
+void delete_copies(vector<T>& a) {
     sort(a.begin(), a.end());
     a.erase(unique(a.begin(), a.end()), a.end());
 }
