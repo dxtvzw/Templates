@@ -39,26 +39,26 @@ void dfs(int v, vector<int>& comp) {
 }
 
 void Kosaraju(int n) {
-	for (int i = 1; i <= n; i++) {
+    for (int i = 1; i <= n; i++) {
         used[i] = 0;
-	}
-	for (int i = 1; i <= n; i++) {
+    }
+    for (int i = 1; i <= n; i++) {
         if (!used[i]) {
             dfs_inv(i);
         }
-	}
-	reverse(post.begin(), post.end());
-	for (int i = 1; i <= n; i++) {
+    }
+    reverse(post.begin(), post.end());
+    for (int i = 1; i <= n; i++) {
         used[i] = 0;
-	}
-	for (int v : post) {
-		if (!used[v]) {
-			vector<int> comp;
-			dfs(v, comp);
-			comps.pb(comp);
-		}
-	}
-	// comps = reversed topsort
+    }
+    for (int v : post) {
+        if (!used[v]) {
+            vector<int> comp;
+            dfs(v, comp);
+            comps.pb(comp);
+        }
+    }
+    // comps = reversed topsort
 }
 
 int main() {
