@@ -12,8 +12,8 @@ mt19937 rnd;
 typedef vector<ll> poly;
 
 ostream& operator <<(ostream& ostr, const poly& x) {
-	for (ll it : x) ostr << it << " ";
-	return ostr;
+    for (ll it : x) ostr << it << " ";
+    return ostr;
 }
 
 const int B = 3;
