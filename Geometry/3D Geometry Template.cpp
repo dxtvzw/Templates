@@ -100,19 +100,19 @@ struct Plane {
 };
 
 ostream& operator <<(ostream& ostr, const Vec& v) {
-	return ostr << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+    return ostr << "(" << v.x << ", " << v.y << ", " << v.z << ")";
 }
 
 ostream& operator <<(ostream& ostr, const Line& l) {
-	return ostr << "f(t) = " << l.a << " + " << l.b << " * t";
+    return ostr << "f(t) = " << l.a << " + " << l.b << " * t";
 }
 
 ostream& operator <<(ostream& ostr, const Rat& ot) {
-	return ostr << "(" << ot.p << " / " << ot.q << ")";
+    return ostr << "(" << ot.p << " / " << ot.q << ")";
 }
 
 ostream& operator <<(ostream& ostr, const Point& ot) {
-	return ostr << "(" << ot.x << ", " << ot.y << ", " << ot.z << ")";
+    return ostr << "(" << ot.x << ", " << ot.y << ", " << ot.z << ")";
 }
 
 Vec cross(Vec v, Vec u) {
