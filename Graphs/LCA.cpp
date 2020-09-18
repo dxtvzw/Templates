@@ -16,31 +16,31 @@ int timer;
 int depth[N];
 
 void dfs_lca(int v = 1, int p = 1) {
-	in[v] = ++timer;
-	up[v][0] = p;
-	for (int i = 1; i < L; i++) {
-		up[v][i] = up[up[v][i-1]][i-1];
-	}
-	for (int to : g[v]) {
-		if (to != p) {
+    in[v] = ++timer;
+    up[v][0] = p;
+    for (int i = 1; i < L; i++) {
+        up[v][i] = up[up[v][i-1]][i-1];
+    }
+    for (int to : g[v]) {
+        if (to != p) {
             depth[to] = depth[v] + 1;
             dfs_lca(to, v);
-		}
-	}
-	out[v] = ++timer;
+        }
+    }
+    out[v] = ++timer;
 }
 
 bool is_anc(int u, int v) {
-	return in[u] <= in[v] && in[v] <= out[u];
+    return in[u] <= in[v] && in[v] <= out[u];
 }
 
 int lca(int u, int v) {
-	if (is_anc(u, v)) return u;
-	else if (is_anc(v, u)) return v;
-	for (int i = L - 1; i >= 0; i--) {
-		if (!is_anc(up[u][i], v)) u = up[u][i];
-	}
-	return up[u][0];
+    if (is_anc(u, v)) return u;
+    else if (is_anc(v, u)) return v;
+    for (int i = L - 1; i >= 0; i--) {
+        if (!is_anc(up[u][i], v)) u = up[u][i];
+    }
+    return up[u][0];
 }
 
 int dist(int u, int v) {
