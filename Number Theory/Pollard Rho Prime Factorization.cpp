@@ -67,7 +67,7 @@ namespace pollard_rho{
                 a = f(a, n, c);
                 b = f(f(b, n, c), n, c);
             } while (gcd(abs(a - b), n) == 1);
-            if(a != b) break;
+            if (a != b) break;
         }
         ll x = gcd(abs(a - b), n);
         rec(x, v);
