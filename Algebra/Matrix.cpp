@@ -27,7 +27,14 @@ struct Matrix {
             }
         }
     }
-    vector<T>& operator[](int i) {
+    Matrix(vector<vector<T>> _data): data(std::move(_data)) {
+        row = data.size();
+        col = data[0].size();
+    }
+    vector<T>& operator[](size_t i) {
+        return data[i];
+    }
+    const vector<T>& operator[](size_t i) const {
         return data[i];
     }
     Matrix operator+(Matrix& b) const {
