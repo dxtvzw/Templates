@@ -11,7 +11,8 @@ typedef pair<ll, ll> pll;
 mt19937 rnd;
 
 template<int mod>
-struct Modular {
+class Modular {
+public:
     int val;
     Modular(int new_val = 0) {
         val = new_val;
@@ -39,29 +40,29 @@ struct Modular {
         return binpow(a, mod - 2);
     }
     Modular operator/(const Modular& ot) const {
-        return 1ll * val * inv(ot).val % mod;
+        return *this * inv(ot);
     }
     Modular& operator++() {
-        if (val + 1 == mod) return 0;
-        else return val + 1;
+        if (val + 1 == mod) val = 0;
+        else ++val;
+        return *this;
     }
-    void operator+=(const Modular& ot) {
-        val += ot.val;
-        if (val >= mod) {
-            val -= mod;
-        }
+    Modular operator++(int) {
+        Modular tmp = *this;
+        ++(*this);
+        return tmp;
     }
-    void operator-=(const Modular& ot) {
-        val -= ot.val;
-        if (val < 0) {
-            val += mod;
-        }
+    Modular& operator+=(const Modular& ot) {
+        return *this = *this + ot;
     }
-    void operator*=(const Modular& ot) {
-        val = 1ll * val * ot.val % mod;
+    Modular& operator-=(const Modular& ot) {
+        return *this = *this - ot;
     }
-    void operator/=(const Modular& ot) {
-        val = 1ll * val * inv(ot).val % mod;
+    Modular& operator*=(const Modular& ot) {
+        return *this = *this * ot;
+    }
+    Modular& operator/=(const Modular& ot) {
+        return *this = *this / ot;
     }
     bool operator==(const Modular& ot) const {
         return val == ot.val;
@@ -85,12 +86,14 @@ const int mod = 1000000007;
 using Mint = Modular<mod>;
 
 const int N = 2e5 + 10;
-Mint fact[N], inv_fact[N];
+Mint fact[N], inv_fact[N], pw2[N], pw3[N];
 
 void init() {
-    fact[0] = 1;
+    fact[0] = pw2[0] = pw3[0] = 1;
     for (int i = 1; i <= N - 1; i++) {
         fact[i] = fact[i - 1] * i;
+        pw2[i] = pw2[i - 1] * 2;
+        pw3[i] = pw3[i - 1] * 3;
     }
     inv_fact[N - 1] = inv(fact[N - 1]);
     for (int i = N - 2; i >= 0; i--) {
@@ -99,8 +102,8 @@ void init() {
 }
 
 Mint C(int n, int k) {
-    if (n < 0 || k < 0) return 0;
-    return n >= k ? fact[n] * inv_fact[k] * inv_fact[n - k] : 0;
+    if (n < 0 || k < 0 || n < k) return 0;
+    return fact[n] * inv_fact[k] * inv_fact[n - k];
 }
 
 int main() {
