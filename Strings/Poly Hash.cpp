@@ -8,7 +8,8 @@ typedef pair<int, int> pii;
 mt19937 rnd;
 
 template<int mod>
-struct Modular {
+class Modular {
+public:
     int val;
     Modular(int new_val = 0) {
         val = new_val;
@@ -36,29 +37,29 @@ struct Modular {
         return binpow(a, mod - 2);
     }
     Modular operator/(const Modular& ot) const {
-        return 1ll * val * inv(ot).val % mod;
+        return *this * inv(ot);
     }
     Modular& operator++() {
-        if (val + 1 == mod) return 0;
-        else return val + 1;
+        if (val + 1 == mod) val = 0;
+        else ++val;
+        return *this;
     }
-    void operator+=(const Modular& ot) {
-        val += ot.val;
-        if (val >= mod) {
-            val -= mod;
-        }
+    Modular operator++(int) {
+        Modular tmp = *this;
+        ++(*this);
+        return tmp;
     }
-    void operator-=(const Modular& ot) {
-        val -= ot.val;
-        if (val < 0) {
-            val += mod;
-        }
+    Modular& operator+=(const Modular& ot) {
+        return *this = *this + ot;
     }
-    void operator*=(const Modular& ot) {
-        val = 1ll * val * ot.val % mod;
+    Modular& operator-=(const Modular& ot) {
+        return *this = *this - ot;
     }
-    void operator/=(const Modular& ot) {
-        val = 1ll * val * inv(ot).val % mod;
+    Modular& operator*=(const Modular& ot) {
+        return *this = *this * ot;
+    }
+    Modular& operator/=(const Modular& ot) {
+        return *this = *this / ot;
     }
     bool operator==(const Modular& ot) const {
         return val == ot.val;
