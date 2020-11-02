@@ -1,8 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
+//typedef __int128_t LL;
 typedef long double ld;
 typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
 #define F first
 #define S second
 #define pb push_back
@@ -21,10 +23,14 @@ struct Point {
     Point operator+(const Point& ot) {
         return {x + ot.x, y + ot.y};
     }
-    bool operator<(const Point& q) const {
-        return x < q.x || (x == q.x && y < q.y);
+    bool operator<(const Point& ot) const {
+        return std::tie(x, y) < std::tie(ot.x, ot.y);
     }
 };
+
+istream& operator>>(istream& istr, Point& p) {
+    return istr >> p.x >> p.y;
+}
 
 ostream& operator<<(ostream& ostr, const Point& p) {
     return ostr << p.x << " " << p.y;
@@ -95,6 +101,7 @@ Type_2 area(Point A, Point B, Point C) {
     Type_2 a = dist(B, C), b = dist(A, C), c = dist(A, B);
     Type_2 p = (a + b + c) / 2;
     return sqrt(p * (p - a) * (p - b) * (p - c));
+    // return cross(A, B, C) / 2;
 }
 
 Type_2 radius(Point A, Point B, Point C) {
