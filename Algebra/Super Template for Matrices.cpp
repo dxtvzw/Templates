@@ -229,8 +229,8 @@ T Gauss(Matrix<T>& a) {
         if (sel != row) {
             det *= T(-1);
         }
-        for (int i = col; i < a.col; i++) {
-            swap(a[sel][i], a[row][i]);
+        for (int j = col; j < a.col; j++) {
+            swap(a[sel][j], a[row][j]);
         }
         for (int i = 0; i < a.row; i++) {
             if (i != row) {

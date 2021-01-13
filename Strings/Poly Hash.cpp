@@ -81,19 +81,23 @@ ostream& operator<<(ostream& ostr, const Modular<mod>& x) {
 
 template <int mod>
 struct PolyHash {
-    static const int N = 1e6 + 10;
-    static const int V = 1000;
-    Modular<mod> p = rnd() % int(sqrt(mod)) + V;
-    Modular<mod> pw[N];
-    Modular<mod> pref[N];
-    void init(int n, vector<int> a) {
+    int N;
+    Modular<mod> p = rnd() % 10000 + 1000;
+    vector<Modular<mod>> pw;
+    vector<Modular<mod>> pref;
+    template <typename container>
+    void init(const container& a) {
+        int n = a.size();
+        pw.resize(n + 1, 0);
+        pref.resize(n + 1, 0);
         pw[0] = 1;
         for (int i = 1; i <= n; i++) {
-            pref[i] = pref[i - 1] * p + a[i];
+            pref[i] = pref[i - 1] * p + a[i - 1];
             pw[i] = pw[i - 1] * p;
         }
     }
     Modular<mod> get(int l, int r) {
+        ++l, ++r;
         return pref[r] - pref[l - 1] * pw[r - l + 1];
     }
 };

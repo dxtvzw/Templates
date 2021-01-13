@@ -14,10 +14,20 @@ void delete_copies(vector<T>& a) {
     a.erase(unique(a.begin(), a.end()), a.end());
 }
 
-std::ostream& operator<<(std::ostream& dest, __int128_t value) {
+std::istream& operator>>(std::istream& istr, __int128_t& val) {
+    string s;
+    istr >> s;
+    val = 0;
+    for (char c : s) {
+        val = 10 * val + (c - '0');
+    }
+    return istr;
+}
+
+std::ostream& operator<<(std::ostream& dest, __int128_t val) {
     std::ostream::sentry s(dest);
     if (s) {
-        __uint128_t tmp = value < 0 ? -value : value;
+        __uint128_t tmp = val < 0 ? -val : val;
         char buffer[128];
         char* d = std::end(buffer);
         do {
@@ -25,7 +35,7 @@ std::ostream& operator<<(std::ostream& dest, __int128_t value) {
             *d = "0123456789"[tmp % 10];
             tmp /= 10;
         } while (tmp != 0);
-        if (value < 0) {
+        if (val < 0) {
             --d;
             *d = '-';
         }

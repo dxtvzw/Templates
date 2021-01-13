@@ -8,14 +8,15 @@ typedef pair<int, int> pii;
 mt19937 rnd;
 
 struct Node {
-    int val, sum, p, sz;
+    int val, sum, prio, sz;
     Node *l, *r;
-    Node (int val) {
-        this->val = val;
-        this->sum = val;
-        this->p = rnd();
-        this->sz = 1;
-        this->l = this->r = nullptr;
+    Node (int _val) {
+        val = _val;
+        sum = _val;
+        prio = rnd();
+        sz = 1;
+        l = nullptr;
+        r = nullptr;
     }
 };
 
@@ -44,11 +45,11 @@ pNode Merge(pNode t1, pNode t2) {
     if (t1 == nullptr) return t2;
     if (t2 == nullptr) return t1;
     pNode res;
-    if (t1->p < t2->p) {
+    if (t1->prio < t2->prio) {
         res = t1;
         res->r = Merge(t1->r, t2);
     }
-    if (t1->p > t2->p) {
+    else {
         res = t2;
         res->l = Merge(t1, t2->l);
     }
@@ -99,6 +100,13 @@ void dfs_print(pNode v) {
     if (v->l) dfs_print(v->l);
     cout << val(v) << " ";
     if (v->r) dfs_print(v->r);
+}
+
+void dfs_delete(pNode v) {
+    if (v == nullptr) return;
+    dfs_delete(v->l);
+    dfs_delete(v->r);
+    delete v;
 }
 
 int main() {
