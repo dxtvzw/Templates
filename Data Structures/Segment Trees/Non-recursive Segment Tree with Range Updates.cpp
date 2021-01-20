@@ -8,8 +8,8 @@ typedef pair<int, int> pii;
 mt19937 rnd;
 
 struct lazy_segment_tree {
-    static const int N = 1e6 + 5;
-    ll t[2 * N + 5];
+    static const int N = 1e6 + 10;
+    ll t[2 * N + 10];
     void update(int l, int r, int val) {
         for (l += N, r += N; l <= r; l >>= 1, r >>= 1) {
             if (l & 1) t[l++] += val;

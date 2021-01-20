@@ -21,7 +21,7 @@ struct segment_tree {
             t[v] = a[tl];
             return;
         }
-        int tm = (tl + tr)/2;
+        int tm = (tl + tr) / 2;
         build(v + v, tl, tm);
         build(v + v + 1, tm + 1, tr);
         t[v] = merge(t[v + v], t[v + v + 1]);
@@ -32,7 +32,7 @@ struct segment_tree {
             t[v] = val;
             return;
         }
-        int tm = (tl + tr)/2;
+        int tm = (tl + tr) / 2;
         update(pos, val, v + v, tl, tm);
         update(pos, val, v + v + 1, tm + 1, tr);
         t[v] = merge(t[v + v], t[v + v + 1]);
@@ -42,7 +42,7 @@ struct segment_tree {
         if (l <= tl && tr <= r) {
             return t[v];
         }
-        int tm = (tl + tr)/2;
+        int tm = (tl + tr) / 2;
         return merge(get(l, r, v + v, tl, tm), get(l, r, v + v + 1, tm + 1, tr));
     }
 };

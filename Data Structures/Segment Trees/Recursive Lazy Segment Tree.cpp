@@ -27,7 +27,7 @@ struct lazy_segment_tree {
     }
     void push(int v, int tl, int tr) {
         if (!ch[v]) return;
-        t[v] += ch[v] * 1ll * (tr - tl + 1); // r - l + 1 for sum and 1 for min/max
+        t[v] += 1ll * ch[v] * (tr - tl + 1); // tr - tl + 1 for sum and 1 for min/max
         if (tl < tr) {
             ch[v + v] += ch[v];
             ch[v + v + 1] += ch[v];

@@ -8,8 +8,8 @@ typedef pair<int, int> pii;
 mt19937 rnd;
 
 struct segment_tree {
-    static const int N = 1e6 + 5;
-    ll t[2 * N + 5];
+    static const int N = 1e6 + 10;
+    ll t[2 * N + 10];
     void build() {
         for (int i = N - 1; i > 0; i--) {
             t[i] = t[i << 1] + t[i << 1 | 1];
