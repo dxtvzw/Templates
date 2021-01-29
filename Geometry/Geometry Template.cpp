@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
-typedef __int128_t LL;
+//typedef __int128_t LL;
 typedef long double ld;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
@@ -10,22 +10,45 @@ typedef pair<ll, ll> pll;
 #define pb push_back
 mt19937 rnd;
 
+#define nan my_nan
+
 typedef long double TP;
+const TP eps = 1e-9;
+const TP inf = 1e18 + 10;
+const TP nan = inf + inf + 123123;
+const long long mult_const = 2;
 
 template <typename T>
 struct Point {
     T x, y;
-    void fit() {
-        x *= 2, y *= 2;
+    Point& fit() {
+        x *= mult_const;
+        y *= mult_const;
+        return *this;
+    }
+    Point operator+(const Point& ot) const {
+        return {x + ot.x, y + ot.y};
+    }
+    Point operator-(const Point& ot) const {
+        return {x - ot.x, y - ot.y};
+    }
+    Point& operator+=(const Point& ot) {
+        return *this = *this + ot;
+    }
+    Point& operator-=(const Point& ot) {
+        return *this = *this - ot;
     }
     bool operator<(const Point& ot) const {
         return std::tie(x, y) < std::tie(ot.x, ot.y);
     }
+    bool operator==(const Point& ot) const {
+        return x == ot.x && y == ot.y;
+    }
+    bool operator!=(const Point& ot) const {
+        return x != ot.x || y != ot.y;
+    }
 };
 
-#define nan my_nan
-
-const TP nan = 3e18 + 123123;
 const Point<TP> nap = {nan, nan};
 
 template <typename T>
@@ -35,26 +58,35 @@ istream& operator>>(istream& istr, Point<T>& p) {
 
 template <typename T>
 ostream& operator<<(ostream& ostr, const Point<T>& p) {
-    return ostr << p.x << " " << p.y;
-    //return ostr << "(" << p.x << ", " << p.y << ")";
+    return ostr << "(" << p.x << ", " << p.y << ")";
 }
 
 template <typename T>
 struct Line {
     T a, b, c;
-    void fit() {
-        /*
+    Line& fit() {
+        // COMMENT OUT THIS PART IF TYPE IS NOT AN INTEGER
         T gcd = __gcd(a, __gcd(b, c));
         a /= gcd, b /= gcd, c /= gcd;
-        */
+        //////////////////////////////////////////////////
         if ((a < 0) || (a == 0 && b < 0)) {
-            a *= -1, b *= -1, c *= -1;
+            a = -a, b = -b, c = -c;
         }
+        return *this;
+    }
+    template <typename K>
+    K calc(const Point<K>& p) const {
+        return a * p.x + b * p.y + c;
     }
     bool operator<(const Line& ot) const {
         return std::tie(a, b, c) < std::tie(ot.a, ot.b, ot.c);
     }
 };
+
+template <typename T>
+istream& operator>>(istream& istr, Line<T>& l) {
+    return istr >> l.a >> l.b >> l.c;
+}
 
 template <typename T>
 ostream& operator<<(ostream& ostr, const Line<T>& l) {
@@ -65,9 +97,10 @@ template <typename T>
 struct Circle {
     Point<T> o;
     T r;
-    void fit() {
+    Circle& fit() {
         o.fit();
-        r *= 2;
+        r *= mult_const;
+        return *this;
     }
 };
 
@@ -81,7 +114,16 @@ ostream& operator<<(ostream& ostr, const Circle<T>& w) {
     return ostr << w.o << " : " << w.r;
 }
 
-// solve a * x^2 + b * x + c = 0
+template <typename T>
+Point<TP> intersect(const Line<T>& p, const Line<T>& q) {
+    if (p.a * q.b == p.b * q.a) {
+        return nap;
+    }
+    else {
+        return {TP(p.b * q.c - q.b * p.c) / TP(q.b * p.a - q.a * p.b), TP(q.a * p.c - q.c * p.a) / TP(q.b * p.a - q.a * p.b)};
+    }
+}
+
 pair<TP, TP> solve_quad(TP a, TP b, TP c) {
     ld d = b * b - 4 * a * c;
     if (d < 0) {
@@ -93,8 +135,8 @@ pair<TP, TP> solve_quad(TP a, TP b, TP c) {
 }
 
 template <typename T1, typename T2>
-pair<Point<TP>, Point<TP>> intersect(Line<T1> l, Circle<T2> w) {
-    ld a = l.a, b = l.b, c = l.c, p = w.o.x, q = w.o.y, r = w.r;
+pair<Point<TP>, Point<TP>> intersect(const Line<T1>& l, const Circle<T2>& w) {
+    TP a = l.a, b = l.b, c = l.c, p = w.o.x, q = w.o.y, r = w.r;
     if (b != 0) {
         auto x = solve_quad(a * a / b / b + 1, 2 * a / b * (c / b + q) - 2 * p, p * p + (c / b + q) * (c / b + q) - r * r);
         if (x.F == nan) {
@@ -151,25 +193,27 @@ TP angle(Point<T1> O, Point<T2> p, Point<T3> q) {
 
 template <typename T>
 Line<T> find_line(Point<T> p, Point<T> q) {
-    T a = p.y - q.y;
-    T b = q.x - p.x;
-    T c = p.x * q.y - p.y * q.x;
-    Line l = {a, b, c};
-    l.fit();
-    return l;
+    return Line<T>(p.y - q.y, q.x - p.x, p.x * q.y - p.y * q.x).fit();
 }
 
 template <typename T>
 Line<T> mid_perp(Point<T> p, Point<T> q) {
-    Line<T> l = {2 * (p.x - q.x), 2 * (p.y - q.y), -((p.x - q.x) * (p.x + q.x) + (p.y - q.y) * (p.y + q.y))};
-    l.fit();
-    return l;
+    return Line<T>(2 * (p.x - q.x), 2 * (p.y - q.y), -((p.x - q.x) * (p.x + q.x) + (p.y - q.y) * (p.y + q.y))).fit();
+}
+
+template <typename T>
+TP area(const vector<Point<T>> v) {
+    TP ans = cross(v.back(), v.front());
+    for (int i = 0; i + 1 < v.size(); i++) {
+        ans += cross(v[i], v[i + 1]);
+    }
+    return ans / TP(2);
 }
 
 template <typename T>
 TP area(Point<T> A, Point<T> B, Point<T> C) {
     TP a = dist(B, C), b = dist(A, C), c = dist(A, B);
-    TP p = (a + b + c) / 2;
+    TP p = (a + b + c) / TP(2);
     return sqrt(p * (p - a) * (p - b) * (p - c));
     // return cross(A, B, C) / 2;
 }
