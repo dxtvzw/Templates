@@ -4,6 +4,7 @@ typedef long long ll;
 //typedef __int128_t LL;
 typedef long double ld;
 typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
 #define F first
 #define S second
 #define pb push_back
@@ -81,6 +82,13 @@ Rational<T> abs(const Rational<T>& r) {
 }
 
 template <typename T = long long>
+istream& operator>>(istream& istr, Rational<T>& r) {
+    istr >> r.p;
+    r.q = 1;
+    return istr;
+}
+
+template <typename T = long long>
 ostream& operator<<(ostream& ostr, const Rational<T>& r) {
     return ostr << "(" << r.p << " / " << r.q << ")";
 }
@@ -111,6 +119,15 @@ struct Matrix {
     }
     const vector<T>& operator[](size_t i) const {
         return data[i];
+    }
+    Matrix transpose() const {
+        Matrix res(row, col);
+        for (int i = 0; i < res.row; i++) {
+            for (int j = 0; j < res.col; j++) {
+                res[i][j] = data[j][i];
+            }
+        }
+        return res;
     }
     Matrix operator+(Matrix& b) const {
         Matrix res(row, col);
