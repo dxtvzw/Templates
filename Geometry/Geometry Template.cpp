@@ -317,6 +317,12 @@ ppp get_tangents(Point<real_t> a, Circle<real_t> w) {
     auto p = intersect(find_line(rotate(w.o, a, alpha), w.o), w);
     auto q = intersect(find_line(rotate(w.o, a, -alpha), w.o), w);
     return {get_closest(p, a, a), get_closest(q, a, a)};
+    /*
+    real_t d = dist(a, w.o);
+    real_t ah = d - w.r * w.r / d;
+    Point<real_t> h = div_seg(a, w.o, ah / d);
+    return intersect(perp_bis(a, h * 2 - a), w);
+    */
 }
 
 template <typename T>
