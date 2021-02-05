@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
-//typedef __int128_t LL;
+typedef __int128_t LL;
 typedef long double ld;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
@@ -12,15 +12,21 @@ mt19937 rnd;
 
 #define nan my_nan
 
-typedef long double TP;
-const TP eps = 1e-9;
-const TP inf = 1e18 + 10;
-const TP nan = inf + inf + 123123;
+typedef long double real_t;
+const real_t eps = 1e-9;
+const real_t inf = 1e18 + 10;
+const real_t nan = inf + inf + 123123;
+const real_t pi = acos(-1);
 const long long mult_const = 2;
+
+bool are_eq(real_t a, real_t b) {
+    return abs(a - b) < eps;
+}
 
 template <typename T>
 struct Point {
     T x, y;
+    int id;
     Point& fit() {
         x *= mult_const;
         y *= mult_const;
@@ -32,24 +38,53 @@ struct Point {
     Point operator-(const Point& ot) const {
         return {x - ot.x, y - ot.y};
     }
+    Point operator*(T val) const {
+        return {x * val, y * val};
+    }
+    Point operator/(T val) const {
+        return {x / val, y / val};
+    }
+    Point operator*(const Point& ot) const {
+        return {x * ot.x - y * ot.y, x * ot.y + y * ot.x};
+    }
     Point& operator+=(const Point& ot) {
         return *this = *this + ot;
     }
     Point& operator-=(const Point& ot) {
         return *this = *this - ot;
     }
+    Point& operator*=(T val) {
+        return *this = *this * val;
+    }
+    Point& operator/=(T val) {
+        return *this = *this / val;
+    }
+    Point& operator*=(const Point& ot) {
+        return *this = *this * ot;
+    }
     bool operator<(const Point& ot) const {
         return std::tie(x, y) < std::tie(ot.x, ot.y);
     }
+    // operators if T is an integer type
     bool operator==(const Point& ot) const {
         return x == ot.x && y == ot.y;
     }
     bool operator!=(const Point& ot) const {
         return x != ot.x || y != ot.y;
     }
+    // operators if T is not an integer type
+    /*
+    bool operator==(const Point& ot) const {
+        return are_eq(x, ot.x) && are_eq(y, ot.y);
+    }
+    bool operator!=(const Point& ot) const {
+        return !are_eq(x, ot.x) || !are_eq(y, ot.y);
+    }
+    */
 };
 
-const Point<TP> nap = {nan, nan};
+typedef pair<Point<real_t>, Point<real_t>> ppp;
+const Point<real_t> nap = {nan, nan};
 
 template <typename T>
 istream& operator>>(istream& istr, Point<T>& p) {
@@ -64,10 +99,13 @@ ostream& operator<<(ostream& ostr, const Point<T>& p) {
 template <typename T>
 struct Line {
     T a, b, c;
+    Line(T _a, T _b, T _c) {
+        a = _a, b = _b, c = _c;
+    }
     Line& fit() {
         // COMMENT OUT THIS PART IF TYPE IS NOT AN INTEGER
-        T gcd = __gcd(a, __gcd(b, c));
-        a /= gcd, b /= gcd, c /= gcd;
+        //T gcd = __gcd(a, __gcd(b, c));
+        //a /= gcd, b /= gcd, c /= gcd;
         //////////////////////////////////////////////////
         if ((a < 0) || (a == 0 && b < 0)) {
             a = -a, b = -b, c = -c;
@@ -111,21 +149,21 @@ istream& operator>>(istream& istr, Circle<T>& w) {
 
 template <typename T>
 ostream& operator<<(ostream& ostr, const Circle<T>& w) {
-    return ostr << w.o << " : " << w.r;
+    return ostr << "(" << w.o << " : " << w.r << ")";
 }
 
 template <typename T>
-Point<TP> intersect(const Line<T>& p, const Line<T>& q) {
+Point<real_t> intersect(Line<T> p, Line<T> q) {
     if (p.a * q.b == p.b * q.a) {
         return nap;
     }
     else {
-        return {TP(p.b * q.c - q.b * p.c) / TP(q.b * p.a - q.a * p.b), TP(q.a * p.c - q.c * p.a) / TP(q.b * p.a - q.a * p.b)};
+        return {real_t(p.b * q.c - q.b * p.c) / real_t(q.b * p.a - q.a * p.b), real_t(q.a * p.c - q.c * p.a) / real_t(q.b * p.a - q.a * p.b)};
     }
 }
 
-pair<TP, TP> solve_quad(TP a, TP b, TP c) {
-    ld d = b * b - 4 * a * c;
+pair<real_t, real_t> solve_quad(real_t a, real_t b, real_t c) {
+    real_t d = b * b - 4 * a * c;
     if (d < 0) {
         return {my_nan, my_nan};
     }
@@ -135,11 +173,12 @@ pair<TP, TP> solve_quad(TP a, TP b, TP c) {
 }
 
 template <typename T1, typename T2>
-pair<Point<TP>, Point<TP>> intersect(const Line<T1>& l, const Circle<T2>& w) {
-    TP a = l.a, b = l.b, c = l.c, p = w.o.x, q = w.o.y, r = w.r;
-    if (b != 0) {
+ppp intersect(Line<T1> l, Circle<T2> w) {
+    real_t a = l.a, b = l.b, c = l.c, p = w.o.x, q = w.o.y, r = w.r;
+    assert(!are_eq(a, 0) || !are_eq(b, 0)); ////////////////////////////////////////// BE CAREFUL WITH THIS ASSERT
+    if (abs(b) > eps) {
         auto x = solve_quad(a * a / b / b + 1, 2 * a / b * (c / b + q) - 2 * p, p * p + (c / b + q) * (c / b + q) - r * r);
-        if (x.F == nan) {
+        if (abs(x.F - nan) <= eps) {
             return {nap, nap};
         }
         else {
@@ -154,6 +193,14 @@ pair<Point<TP>, Point<TP>> intersect(const Line<T1>& l, const Circle<T2>& w) {
         swap(ans.S.x, ans.S.y);
         return ans;
     }
+}
+
+template <typename T>
+Point<T> invert(Point<T> p, Circle<T> w) {
+    p -= w.o;
+    p *= w.r * w.r / (p.x * p.x + p.y * p.y);
+    p += w.o;
+    return p;
 }
 
 template <typename T>
@@ -181,14 +228,14 @@ T dist2(Point<T> p, Point<T> q) {
     return (p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y);
 }
 
-template <typename T1, typename T2>
-TP dist(Point<T1> p, Point<T2> q) {
+template <typename T>
+real_t dist(Point<T> p, Point<T> q) {
     return sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
 }
 
-template <typename T1, typename T2, typename T3>
-TP angle(Point<T1> O, Point<T2> p, Point<T3> q) {
-    return acos(Type_2(dot(O, p, q)) / Type_2(dist(O, p) * dist(O, q)));
+template <typename T>
+real_t angle(Point<T> O, Point<T> p, Point<T> q) {
+    return acos(real_t(dot(O, p, q)) / dist(O, p) / dist(O, q));
 }
 
 template <typename T>
@@ -197,29 +244,26 @@ Line<T> find_line(Point<T> p, Point<T> q) {
 }
 
 template <typename T>
-Line<T> mid_perp(Point<T> p, Point<T> q) {
+Line<T> perp_bis(Point<T> p, Point<T> q) {
     return Line<T>(2 * (p.x - q.x), 2 * (p.y - q.y), -((p.x - q.x) * (p.x + q.x) + (p.y - q.y) * (p.y + q.y))).fit();
 }
 
 template <typename T>
-TP area(const vector<Point<T>> v) {
-    TP ans = cross(v.back(), v.front());
+real_t area(const vector<Point<T>>& v) {
+    real_t ans = cross(v.back(), v.front());
     for (int i = 0; i + 1 < v.size(); i++) {
         ans += cross(v[i], v[i + 1]);
     }
-    return ans / TP(2);
+    return ans / 2;
 }
 
 template <typename T>
-TP area(Point<T> A, Point<T> B, Point<T> C) {
-    TP a = dist(B, C), b = dist(A, C), c = dist(A, B);
-    TP p = (a + b + c) / TP(2);
-    return sqrt(p * (p - a) * (p - b) * (p - c));
-    // return cross(A, B, C) / 2;
+real_t area(Point<T> A, Point<T> B, Point<T> C) {
+    return cross(A, B, C) / 2;
 }
 
 template <typename T>
-TP radius(Point<T> A, Point<T> B, Point<T> C) {
+real_t radius(Point<T> A, Point<T> B, Point<T> C) {
     return dist(A, B) * dist(B, C) * dist(C, A) / (area(A, B, C) * 4);
 }
 
@@ -239,6 +283,46 @@ vector<Point<T>> convex_hull(vector<Point<T>> v) {
     }
     hull.resize(k - 1);
     return hull;
+}
+
+// AC = k, BC = 1 - k
+Point<real_t> div_seg(Point<real_t> a, Point<real_t> b, real_t k) {
+    return a * (1 - k) + b * k;
+}
+
+#define rotate my_complex_rotation
+
+// rotation of point A by alpha degrees counterclockwise centered at point O
+Point<real_t> rotate(Point<real_t> O, Point<real_t> A, real_t alpha) {
+    A -= O;
+    A *= Point<real_t>{cos(alpha), sin(alpha)};
+    A += O;
+    return A;
+}
+
+Point<real_t> get_closest(ppp p, Point<real_t> a, Point<real_t> b) {
+    if (dist(p.F, a) + dist(p.F, b) < dist(p.S, a) + dist(p.S, b)) {
+        return p.F;
+    }
+    else {
+        return p.S;
+    }
+}
+
+ppp get_tangents(Point<real_t> a, Circle<real_t> w) {
+    if (abs(dist(a, w.o) - w.r) < eps) {
+        return {a, a};
+    }
+    real_t alpha = acos(w.r / dist(a, w.o));
+    auto p = intersect(find_line(rotate(w.o, a, alpha), w.o), w);
+    auto q = intersect(find_line(rotate(w.o, a, -alpha), w.o), w);
+    return {get_closest(p, a, a), get_closest(q, a, a)};
+}
+
+template <typename T>
+bool on_seg(Point<T> a, Point<T> b, Point<T> c) {
+    Line l = find_line(a, b);
+    return min(a.x, b.x) <= c.x && c.x <= max(a.x, b.x)&& min(a.y, b.y) <= c.y && c.y <= max(a.y, b.y) && l.a * c.x + l.b * c.y + l.c == 0;
 }
 
 int main() {
