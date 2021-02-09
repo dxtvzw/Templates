@@ -152,6 +152,7 @@ ostream& operator<<(ostream& ostr, const Circle<T>& w) {
     return ostr << "(" << w.o << " : " << w.r << ")";
 }
 
+// intersection of lines
 template <typename T>
 Point<real_t> intersect(Line<T> p, Line<T> q) {
     if (p.a * q.b == p.b * q.a) {
@@ -162,6 +163,7 @@ Point<real_t> intersect(Line<T> p, Line<T> q) {
     }
 }
 
+// solving quadratic equality
 pair<real_t, real_t> solve_quad(real_t a, real_t b, real_t c) {
     real_t d = b * b - 4 * a * c;
     if (d < 0) {
@@ -172,6 +174,7 @@ pair<real_t, real_t> solve_quad(real_t a, real_t b, real_t c) {
     }
 }
 
+// intersection of line and circle
 template <typename T1, typename T2>
 ppp intersect(Line<T1> l, Circle<T2> w) {
     real_t a = l.a, b = l.b, c = l.c, p = w.o.x, q = w.o.y, r = w.r;
@@ -195,6 +198,8 @@ ppp intersect(Line<T1> l, Circle<T2> w) {
     }
 }
 
+
+// invert point with respect to circle
 template <typename T>
 Point<T> invert(Point<T> p, Circle<T> w) {
     p -= w.o;
@@ -223,31 +228,43 @@ T cross(Point<T> O, Point<T> p, Point<T> q) {
     return (p.x - O.x) * (q.y - O.y) - (p.y - O.y) * (q.x - O.x);
 }
 
+// square of distance between two points
 template <typename T>
 T dist2(Point<T> p, Point<T> q) {
     return (p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y);
 }
 
+// distance between two points
 template <typename T>
 real_t dist(Point<T> p, Point<T> q) {
     return sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
 }
 
+// angle p O q
 template <typename T>
 real_t angle(Point<T> O, Point<T> p, Point<T> q) {
     return acos(real_t(dot(O, p, q)) / dist(O, p) / dist(O, q));
 }
 
+// angle opposite to the side 'c'
+real_t angle(real_t a, real_t b, real_t c) {
+    assert(a + b > c && b + c > a && c + a > b);
+    return acos((a * a + b * b - c * c) / (2 * a * b));
+}
+
+// line passing through two points
 template <typename T>
 Line<T> find_line(Point<T> p, Point<T> q) {
     return Line<T>(p.y - q.y, q.x - p.x, p.x * q.y - p.y * q.x).fit();
 }
 
+// perpendicular bisector
 template <typename T>
 Line<T> perp_bis(Point<T> p, Point<T> q) {
     return Line<T>(2 * (p.x - q.x), 2 * (p.y - q.y), -((p.x - q.x) * (p.x + q.x) + (p.y - q.y) * (p.y + q.y))).fit();
 }
 
+// area of polygon
 template <typename T>
 real_t area(const vector<Point<T>>& v) {
     real_t ans = cross(v.back(), v.front());
@@ -257,16 +274,19 @@ real_t area(const vector<Point<T>>& v) {
     return ans / 2;
 }
 
+// area of triangle
 template <typename T>
 real_t area(Point<T> A, Point<T> B, Point<T> C) {
     return cross(A, B, C) / 2;
 }
 
+// radius of circumscribed circle
 template <typename T>
 real_t radius(Point<T> A, Point<T> B, Point<T> C) {
     return dist(A, B) * dist(B, C) * dist(C, A) / (area(A, B, C) * 4);
 }
 
+// convex hull of points
 template <typename T>
 vector<Point<T>> convex_hull(vector<Point<T>> v) {
     int n = v.size(), k = 0;
@@ -285,7 +305,7 @@ vector<Point<T>> convex_hull(vector<Point<T>> v) {
     return hull;
 }
 
-// AC = k, BC = 1 - k
+// divides segment in given ration AC = k, BC = 1 - k
 Point<real_t> div_seg(Point<real_t> a, Point<real_t> b, real_t k) {
     return a * (1 - k) + b * k;
 }
@@ -300,6 +320,7 @@ Point<real_t> rotate(Point<real_t> O, Point<real_t> A, real_t alpha) {
     return A;
 }
 
+// closest between two points to the given two
 Point<real_t> get_closest(ppp p, Point<real_t> a, Point<real_t> b) {
     if (dist(p.F, a) + dist(p.F, b) < dist(p.S, a) + dist(p.S, b)) {
         return p.F;
@@ -309,6 +330,7 @@ Point<real_t> get_closest(ppp p, Point<real_t> a, Point<real_t> b) {
     }
 }
 
+// points of tangency from point to circle
 ppp get_tangents(Point<real_t> a, Circle<real_t> w) {
     if (abs(dist(a, w.o) - w.r) < eps) {
         return {a, a};
@@ -325,6 +347,7 @@ ppp get_tangents(Point<real_t> a, Circle<real_t> w) {
     */
 }
 
+// check if C lies on segment between a and b
 template <typename T>
 bool on_seg(Point<T> a, Point<T> b, Point<T> c) {
     Line l = find_line(a, b);
