@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
-//typedef __int128_t LL;
+typedef __int128_t LL;
 typedef long double ld;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
@@ -37,6 +37,9 @@ struct Rational {
             }
         }
         return *this;
+    }
+    Rational operator-() const {
+        return Rational(-p, q);
     }
     Rational operator+(const Rational& ot) const {
         return Rational(p * ot.q + q * ot.p, q * ot.q);
@@ -114,6 +117,15 @@ struct Matrix {
         row = data.size();
         col = data[0].size();
     }
+    Matrix(const vector<T>& _data) {
+        row = _data.size();
+        col = 1;
+        data.resize(row);
+        for (int i = 0; i < row; i++) {
+            data[i].resize(col, 0);
+            data[i][0] = _data[i];
+        }
+    }
     vector<T>& operator[](size_t i) {
         return data[i];
     }
@@ -121,7 +133,7 @@ struct Matrix {
         return data[i];
     }
     Matrix transpose() const {
-        Matrix res(row, col);
+        Matrix res(col, row);
         for (int i = 0; i < res.row; i++) {
             for (int j = 0; j < res.col; j++) {
                 res[i][j] = data[j][i];
@@ -129,7 +141,7 @@ struct Matrix {
         }
         return res;
     }
-    Matrix operator+(Matrix& b) const {
+    Matrix operator+(const Matrix& b) const {
         Matrix res(row, col);
         for (int i = 0; i < res.row; i++) {
             for (int j = 0; j < res.col; j++) {
@@ -138,7 +150,7 @@ struct Matrix {
         }
         return res;
     }
-    Matrix operator-(Matrix& b) const {
+    Matrix operator-(const Matrix& b) const {
         Matrix res(row, col);
         for (int i = 0; i < res.row; i++) {
             for (int j = 0; j < res.col; j++) {
@@ -147,7 +159,7 @@ struct Matrix {
         }
         return res;
     }
-    Matrix operator*(Matrix& b) const {
+    Matrix operator*(const Matrix& b) const {
         Matrix res(row, b.col);
         for (int i = 0; i < res.row; i++) {
             for (int j = 0; j < res.col; j++) {
@@ -187,13 +199,13 @@ struct Matrix {
         }
         return res;
     }
-    Matrix& operator+=(Matrix& b) {
+    Matrix& operator+=(const Matrix& b) {
         return *this = *this + b;
     }
-    Matrix& operator-=(Matrix& b) {
+    Matrix& operator-=(const Matrix& b) {
         return *this = *this - b;
     }
-    Matrix& operator*=(Matrix& b) {
+    Matrix& operator*=(const Matrix& b) {
         return *this = *this * b;
     }
     Matrix& operator+=(T val) {
@@ -300,6 +312,115 @@ Matrix<T> Invert(Matrix<T> a) {
     return res;
 }
 
+#define rank my_rank
+
+template <typename T>
+int rank(Matrix<T> A) {
+    Gauss(A);
+    for (int i = 0; i < A.row; i++) {
+        bool ok = 0;
+        for (int j = 0; j < A.col; j++) {
+            if (A[i][j] != T(0)) {
+                ok = 1;
+                break;
+            }
+        }
+        if (!ok) {
+            return i;
+        }
+    }
+    return A.row;
+}
+
+template <typename T>
+bool is_zero(const Matrix<T>& A) {
+    for (int i = 0; i < A.row; i++) {
+        for (int j = 0; j < A.col; j++) {
+            if (A[i][j] != T(0)) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+// generates random solution to an equation A * x = 0
+template <typename T>
+Matrix<T> gen_any_solution(const Matrix<T>& A, int C = 10) {
+    Matrix<T> v(A.col, 1);
+    vector<int> is_pivot(A.col, -1);
+    for (int i = 0; i < A.row; i++) {
+        for (int j = 0; j < A.col; j++) {
+            if (A[i][j] != T(0)) {
+                is_pivot[j] = i;
+                break;
+            }
+        }
+    }
+    for (int j = v.row - 1; j >= 0; j--) {
+        if (is_pivot[j] == -1) {
+            v[j][0] = int(rand() % (C + C + 1)) - C;
+        }
+        else {
+            for (int i = j + 1; i < v.row; i++) {
+                v[j][0] -= A[is_pivot[j]][i] * v[i][0];
+            }
+        }
+    }
+    assert(is_zero(A * v));
+    return v;
+}
+
+// computes basis of ker(A)
+template <typename T>
+vector<Matrix<T>> get_kernel(Matrix<T> A) {
+    Gauss(A);
+    vector<Matrix<T>> basis;
+    vector<int> is_pivot(A.col, -1);
+    for (int i = 0; i < A.row; i++) {
+        for (int j = 0; j < A.col; j++) {
+            if (A[i][j] != T(0)) {
+                is_pivot[j] = i;
+                break;
+            }
+        }
+    }
+    for (int k = 0; k < A.col; k++) {
+        if (is_pivot[k] == -1) { // makes this free variable equal to 1 and others to 0
+            Matrix<T> v(A.col, 1);
+            v[k][0] = 1;
+            for (int j = k - 1; j >= 0; j--) {
+                if (is_pivot[j] != -1) {
+                    v[j][0] -= A[is_pivot[j]][k] * v[k][0];
+                }
+            }
+            basis.push_back(v);
+        }
+    }
+    return basis;
+}
+
+// computes basis of Im(A)
+template <typename T>
+vector<Matrix<T>> get_image(Matrix<T> A) {
+    A = A.transpose();
+    Gauss(A);
+    vector<Matrix<T>> basis;
+    for (int i = 0; i < A.row; i++) {
+        Matrix<T> v(A.col, 1);
+        for (int j = 0; j < A.col; j++) {
+            v[j][0] = A[i][j];
+        }
+        if (!is_zero(v)) {
+            basis.push_back(v);
+        }
+        else {
+            break;
+        }
+    }
+    return basis;
+}
+
 // binary exponentiation of matrix A to the n'th power
 template <typename T>
 Matrix<T> binpow(Matrix<T> a, int n) {
@@ -366,7 +487,8 @@ ostream& operator<<(ostream& ostr, const vector<T>& poly) {
     return ostr;
 }
 
-using Mat = Matrix<Rational<int64_t>>;
+using Rat = Rational<int64_t>;
+using Mat = Matrix<Rat>;
 
 int main() {
     ios_base::sync_with_stdio(0); cin.tie(0);
@@ -381,3 +503,4 @@ int main() {
 #endif
     return 0;
 }
+
