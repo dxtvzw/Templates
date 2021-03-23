@@ -217,6 +217,16 @@ struct Matrix {
     Matrix& operator*=(T val) {
         return *this = *this * val;
     }
+    bool operator==(const Matrix& ot) const {
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (data[i][j] != ot[i][j]) {
+                    return 0;
+                }
+            }
+        }
+        return 1;
+    }
 };
 
 template <typename T>
@@ -477,6 +487,108 @@ vector<T> Char_poly(Matrix<T> a) {
 }
 
 template <typename T>
+int min_poly_multiplicity(const Matrix<T> a, T lambda) {
+    Matrix<T> b(a.row, a.row, 1);
+    for (int i = 1, prev = 0; i <= a.row; i++) {
+        b *= a - Matrix<T>(a.row, a.row, 1) * lambda;
+        int cur = get_kernel(b).size();
+        if (cur == prev) {
+            return i - 1;
+        }
+        prev = cur;
+    }
+    return 100;
+}
+
+template <typename T>
+int char_poly_multiplicity(const Matrix<T> a, T lambda) {
+    return get_kernel(binpow(a - Matrix<T>(a.row, a.row, 1) * lambda, a.row)).size();
+}
+
+template <typename T>
+vector<Matrix<T>> add_to_basis(const vector<Matrix<T>>& v, const Matrix<T>& a, T lambda, int l) {
+    int n = a.row;
+    Matrix<T> b(n, n);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < v.size(); j++) {
+            b[i][j] = v[j][i][0];
+        }
+    }
+    vector<Matrix<T>> ans;
+    Matrix<T> c = binpow(a - Matrix<T>(n, n, 1) * lambda, l);
+    vector<Matrix<T>> basis = get_kernel(c);
+    for (int j = 0, ptr = v.size(); j < basis.size(); j++) {
+        for (int i = 0; i < b.row; i++) {
+            b[i][ptr] = basis[j][i][0];
+        }
+        if (rank(b) == ptr + 1) {
+            ans.pb(basis[j]);
+            ptr++;
+        }
+    }
+    /*
+    for (int j = v.size(); j < k; j++) {
+        do {
+
+            for (int i = 0; i < b.row; i++) {
+                b[i][j] = T(rnd() % (C + C + 1)) - T(C);
+            }
+        } while (rank(b) != j + 1 || !is_zero(c * b));
+        Matrix<T> cur(b.row, 1);
+        for (int i = 0; i < b.row; i++) {
+            cur[i][0] = b[i][j];
+        }
+        ans.pb(cur);
+    }
+    */
+    return ans;
+}
+
+template <typename T>
+Matrix<T> Jordan_basis(const Matrix<T> a, vector<T> eigen_values) {
+    int n = a.row;
+    Matrix<T> basis(n, n);
+    int ptr = 0;
+    for (T lambda : eigen_values) {
+        vector<Matrix<T>> vec;
+        int k = min_poly_multiplicity(a, lambda);
+        vector<vector<Matrix<T>>> cur_basis(k + 1);
+        for (int l = k; l >= 1; l--) {
+            vector<Matrix<T>> cur = get_kernel(binpow(a - Matrix<T>(n, n, 1) * lambda, l - 1));
+            for (const auto& it : vec) {
+                cur.pb(it);
+            }
+            vector<Matrix<T>> nxt = add_to_basis(cur, a, lambda, l);
+            for (const auto& it : nxt) {
+                vec.pb(it);
+            }
+            cur_basis[l] = vec;
+            for (auto& it : vec) {
+                it = (a - Matrix<T>(n, n, 1) * lambda) * it;
+            }
+        }
+        for (int j = 0; j < cur_basis[1].size(); j++) {
+            for (int i = 1; i <= k; i++) {
+                if (cur_basis[i].size() <= j) {
+                    break;
+                }
+                for (int x = 0; x < n; x++) {
+                    basis[x][ptr] = cur_basis[i][j][x][0];
+                }
+                ptr++;
+            }
+        }
+    }
+    return basis;
+}
+
+template <typename T>
+Matrix<T> Jordan_form(const Matrix<T> a, vector<T> eigen_values) {
+    Matrix<T> b = Jordan_basis(a, eigen_values);
+    return Invert(b) * a * b;
+}
+
+template <typename T>
 ostream& operator<<(ostream& ostr, const vector<T>& poly) {
     for (int i = poly.size() - 1; i >= 0; i--) {
         ostr << poly[i] << " x^" << i;
@@ -503,4 +615,3 @@ int main() {
 #endif
     return 0;
 }
-
