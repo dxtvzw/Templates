@@ -11,6 +11,17 @@ typedef pair<ll, ll> pll;
 mt19937 rnd;
 
 template <typename T>
+ostream& operator<<(ostream& ostr, const vector<T>& poly) {
+    for (int i = poly.size() - 1; i >= 0; i--) {
+        ostr << poly[i] << " x^" << i;
+        if (i >= 1) {
+            ostr << " + ";
+        }
+    }
+    return ostr;
+}
+
+template <typename T>
 struct Rational {
     T p, q;
     Rational(T val) {
@@ -304,7 +315,7 @@ T Gauss(Matrix<T>& a) {
 
 // inverts matrix A using Gaussian elimination on a connected matrix (A|E)
 template <typename T>
-Matrix<T> Invert(Matrix<T> a) {
+Matrix<T> invert(Matrix<T> a) {
     Matrix<T> tmp(a.row, a.row + a.col);
     for (int i = 0; i < a.row; i++) {
         for (int j = 0; j < a.col; j++) {
@@ -448,7 +459,7 @@ Matrix<T> binpow(Matrix<T> a, int n) {
 
 // calculates determinant of matrix a
 template <typename T>
-T Determinant(Matrix<T> a) {
+T determinant(Matrix<T> a) {
     return Gauss(a);
 }
 
@@ -459,7 +470,7 @@ bool getBit(int mask, int b) {
 
 // calculates characteristic polynomial of matrix a
 template <typename T>
-vector<T> Char_poly(Matrix<T> a) {
+vector<T> char_poly(Matrix<T> a) {
     int n = a.row;
     vector<T> chi(n + 1, 0);
     for (int mask = 0; mask < (1 << n); mask++) {
@@ -545,7 +556,7 @@ vector<Matrix<T>> add_to_basis(const vector<Matrix<T>>& v, const Matrix<T>& a, T
 }
 
 template <typename T>
-Matrix<T> Jordan_basis(const Matrix<T> a, vector<T> eigen_values) {
+Matrix<T> Jordan_basis(const Matrix<T>& a, vector<T> eigen_values) {
     int n = a.row;
     Matrix<T> basis(n, n);
     int ptr = 0;
@@ -583,20 +594,107 @@ Matrix<T> Jordan_basis(const Matrix<T> a, vector<T> eigen_values) {
 }
 
 template <typename T>
-Matrix<T> Jordan_form(const Matrix<T> a, vector<T> eigen_values) {
+Matrix<T> Jordan_form(const Matrix<T>& a, vector<T> eigen_values) {
     Matrix<T> b = Jordan_basis(a, eigen_values);
     return Invert(b) * a * b;
 }
 
 template <typename T>
-ostream& operator<<(ostream& ostr, const vector<T>& poly) {
-    for (int i = poly.size() - 1; i >= 0; i--) {
-        ostr << poly[i] << " x^" << i;
-        if (i >= 1) {
-            ostr << " + ";
+Matrix<T> Jacobi_form_slow(const Matrix<T>& b) {
+    vector<T> dets = {T(1)};
+    int n = b.row;
+    for (int i = 1; i <= n; i++) {
+        Matrix<T> tmp(i, i);
+        for (int x = 0; x < i; x++) {
+            for (int y = 0; y < i; y++) {
+                tmp[x][y] = b[x][y];
+            }
+        }
+        dets.pb(determinant(tmp));
+        if (dets.back() == T(0)) {
+            return Matrix<T>(n, n);
         }
     }
-    return ostr;
+    Matrix<T> res(n, n);
+    for (int i = 0; i < n; i++) {
+        res[i][i] = dets[i + 1] / dets[i];
+    }
+    return res;
+}
+
+template <typename T>
+Matrix<T> Jacobi_form_generalized(const Matrix<T>& b) {
+    Matrix<T> a = b;
+    int n = a.row;
+    for (int row = 0; row < n; row++) {
+        if (a[row][row] == T(0)) {
+            int mem = -1;
+            for (int i = row + 1; i < n; i++) {
+                if (a[i][row] != T(0)) {
+                    mem = i;
+                    break;
+                }
+            }
+            if (mem == -1) {
+                continue;
+            }
+            else {
+                for (int j = 0; j < n; j++) {
+                    a[row][j] += a[mem][j];
+                }
+                for (int i = 0; i < n; i++) {
+                    a[i][row] += a[i][mem];
+                }
+            }
+        }
+        for (int i = row + 1; i < n; i++) {
+            T cur = a[i][row] / a[row][row];
+            for (int j = row; j < n; j++) {
+                a[i][j] -= cur * a[row][j];
+            }
+        }
+    }
+    Matrix<T> d(n, n);
+    for (int i = 0; i < n; i++) {
+        d[i][i] = a[i][i];
+    }
+    return d;
+}
+
+template <typename T>
+Matrix<T> Jacobi_basis(const Matrix<T>& b) {
+    Matrix<T> u = b;
+    int n = u.row;
+    for (int row = 0; row < n; row++) {
+        if (u[row][row] == T(0)) {
+            return Matrix<T>(n, n);
+        }
+        else {
+            for (int i = row + 1; i < n; i++) {
+                T cur = u[i][row] / u[row][row];
+                for (int j = row; j < n; j++) {
+                    u[i][j] -= cur * u[row][j];
+                }
+            }
+        }
+    }
+    Matrix<T> d(n, n);
+    for (int i = 0; i < n; i++) {
+        d[i][i] = u[i][i];
+    }
+    Matrix<T> v = invert(d) * u;
+    return invert(u) * d;
+}
+
+template <typename T>
+Matrix<T> Jacobi_form(const Matrix<T>& b) {
+    Matrix<T> c = Jacobi_basis(b);
+    if (is_zero(c)) {
+        return Jacobi_form_generalized(b);
+    }
+    else {
+        return c.transpose() * b * c;
+    }
 }
 
 using Rat = Rational<int64_t>;
