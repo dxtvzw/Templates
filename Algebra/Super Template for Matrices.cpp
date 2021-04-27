@@ -52,17 +52,17 @@ struct Rational {
     Rational operator-() const {
         return Rational(-p, q);
     }
-    Rational operator+(const Rational& ot) const {
-        return Rational(p * ot.q + q * ot.p, q * ot.q);
+    friend Rational operator+(const Rational& a, const Rational& b) {
+        return Rational(a.p * b.q + a.q * b.p, a.q * b.q);
     }
-    Rational operator-(const Rational& ot) const {
-        return Rational(p * ot.q - q * ot.p, q * ot.q);
+    friend Rational operator-(const Rational& a, const Rational& b) {
+        return Rational(a.p * b.q - a.q * b.p, a.q * b.q);
     }
-    Rational operator*(const Rational& ot) const {
-        return Rational(p * ot.p, q * ot.q);
+    friend Rational operator*(const Rational& a, const Rational& b) {
+        return Rational(a.p * b.p, a.q * b.q);
     }
-    Rational operator/(const Rational& ot) const {
-        return Rational(p * ot.q, q * ot.p);
+    friend Rational operator/(const Rational& a, const Rational& b) {
+        return Rational(a.p * b.q, a.q * b.p);
     }
     Rational& operator+=(const Rational& ot) {
         return *this = *this + ot;
@@ -76,17 +76,20 @@ struct Rational {
     Rational& operator/=(const Rational& ot) {
         return *this = *this / ot;
     }
-    bool operator==(const Rational& ot) const {
-        return p == ot.p && q == ot.q;
+    friend bool operator==(const Rational& a, const Rational& b) {
+        return a.p == b.p && a.q == b.q;
     }
-    bool operator!=(const Rational& ot) const {
-        return p != ot.p || q != ot.q;
+    friend bool operator!=(const Rational& a, const Rational& b) {
+        return a.p != b.p || a.q != b.q;
     }
-    bool operator<(const Rational& ot) const {
-        return p * ot.q < q * ot.p;
+    friend bool operator<(const Rational& a, const Rational& b) {
+        return a.p * b.q < a.q * b.p;
     }
-    bool operator>(const Rational& ot) const {
-        return p * ot.q > q * ot.p;
+    friend bool operator>(const Rational& a, const Rational& b) {
+        return a.p * b.q > a.q * b.p;
+    }
+    operator long double() const {
+        return ld(p) / ld(q);
     }
 };
 
@@ -192,14 +195,7 @@ struct Matrix {
         return res;
     }
     Matrix operator-(T val) const {
-        Matrix res(row, col);
-        for (int i = 0; i < res.row; i++) {
-            for (int j = 0; j < res.col; j++) {
-                res[i][j] = data[i][j];
-            }
-            res[i][i] -= val;
-        }
-        return res;
+        return *this + T(-val);
     }
     Matrix operator*(T val) const {
         Matrix res(row, col);
@@ -209,6 +205,9 @@ struct Matrix {
             }
         }
         return res;
+    }
+    Matrix operator/(T val) const {
+        return *this * T(T(1) / val);
     }
     Matrix& operator+=(const Matrix& b) {
         return *this = *this + b;
@@ -273,7 +272,7 @@ T Gauss(Matrix<T>& a) {
                 sel = i;
             }
         }
-        if (a[sel][col] == 0) {
+        if (a[sel][col] == T(0)) {
             continue;
         }
         if (sel != row) {
@@ -295,12 +294,12 @@ T Gauss(Matrix<T>& a) {
     for (int i = 0; i < a.row; i++) {
         T val = 0;
         for (int j = 0; j < a.col; j++) {
-            if (a[i][j] != 0) {
+            if (a[i][j] != T(0)) {
                 val = T(1) / a[i][j];
                 break;
             }
         }
-        if (val == 0) {
+        if (val == T(0)) {
             det = 0;
         }
         else {
@@ -446,7 +445,7 @@ vector<Matrix<T>> get_image(Matrix<T> A) {
 template <typename T>
 Matrix<T> binpow(Matrix<T> a, int n) {
     if (n < 0) {
-        a = Invert(a);
+        a = invert(a);
         n = -n;
     }
     Matrix<T> res(a.row, a.col, 1);
@@ -489,7 +488,7 @@ vector<T> char_poly(Matrix<T> a) {
                 r[i - di][j - dj] = a[i][j];
             }
         }
-        chi[k] += Determinant(r);
+        chi[k] += determinant(r);
     }
     for (int i = n - 1; i >= 0; i -= 2) {
         chi[i] *= T(-1);
@@ -497,6 +496,7 @@ vector<T> char_poly(Matrix<T> a) {
     return chi;
 }
 
+// calculates multiplicity of lambda as a root of minimal polynomial of a
 template <typename T>
 int min_poly_multiplicity(const Matrix<T> a, T lambda) {
     Matrix<T> b(a.row, a.row, 1);
@@ -511,11 +511,13 @@ int min_poly_multiplicity(const Matrix<T> a, T lambda) {
     return 100;
 }
 
+// calculates multiplicity of lambda as a root of characteristic polynomial of a
 template <typename T>
 int char_poly_multiplicity(const Matrix<T> a, T lambda) {
     return get_kernel(binpow(a - Matrix<T>(a.row, a.row, 1) * lambda, a.row)).size();
 }
 
+// part of finding Jordan form
 template <typename T>
 vector<Matrix<T>> add_to_basis(const vector<Matrix<T>>& v, const Matrix<T>& a, T lambda, int l) {
     int n = a.row;
@@ -528,7 +530,7 @@ vector<Matrix<T>> add_to_basis(const vector<Matrix<T>>& v, const Matrix<T>& a, T
     vector<Matrix<T>> ans;
     Matrix<T> c = binpow(a - Matrix<T>(n, n, 1) * lambda, l);
     vector<Matrix<T>> basis = get_kernel(c);
-    for (int j = 0, ptr = v.size(); j < basis.size(); j++) {
+    for (int j = 0, ptr = v.size(); j < basis.size() && ptr < n; j++) {
         for (int i = 0; i < b.row; i++) {
             b[i][ptr] = basis[j][i][0];
         }
@@ -555,6 +557,7 @@ vector<Matrix<T>> add_to_basis(const vector<Matrix<T>>& v, const Matrix<T>& a, T
     return ans;
 }
 
+// find Jordan basis of a
 template <typename T>
 Matrix<T> Jordan_basis(const Matrix<T>& a, vector<T> eigen_values) {
     int n = a.row;
@@ -593,12 +596,14 @@ Matrix<T> Jordan_basis(const Matrix<T>& a, vector<T> eigen_values) {
     return basis;
 }
 
+// finds Jordan form
 template <typename T>
 Matrix<T> Jordan_form(const Matrix<T>& a, vector<T> eigen_values) {
     Matrix<T> b = Jordan_basis(a, eigen_values);
-    return Invert(b) * a * b;
+    return invert(b) * a * b;
 }
 
+// calculates Jacobi form using angle minors
 template <typename T>
 Matrix<T> Jacobi_form_slow(const Matrix<T>& b) {
     vector<T> dets = {T(1)};
@@ -622,6 +627,7 @@ Matrix<T> Jacobi_form_slow(const Matrix<T>& b) {
     return res;
 }
 
+// Jacobi plus plus from lectures
 template <typename T>
 Matrix<T> Jacobi_form_generalized(const Matrix<T>& b) {
     Matrix<T> a = b;
@@ -661,6 +667,7 @@ Matrix<T> Jacobi_form_generalized(const Matrix<T>& b) {
     return d;
 }
 
+// finds Jacobi basis
 template <typename T>
 Matrix<T> Jacobi_basis(const Matrix<T>& b) {
     Matrix<T> u = b;
@@ -686,6 +693,7 @@ Matrix<T> Jacobi_basis(const Matrix<T>& b) {
     return invert(u) * d;
 }
 
+// finds Jacobi form
 template <typename T>
 Matrix<T> Jacobi_form(const Matrix<T>& b) {
     Matrix<T> c = Jacobi_basis(b);
@@ -695,6 +703,131 @@ Matrix<T> Jacobi_form(const Matrix<T>& b) {
     else {
         return c.transpose() * b * c;
     }
+}
+
+// dot product of two column vectors
+template <typename T>
+T dot(const Matrix<T>& a, const Matrix<T>& b) {
+    return (a.transpose() * b)[0][0];
+}
+
+// generates random matrix with integer entries from [-C, C]
+template <typename T>
+Matrix<T> random_matrix(int row, int col, int C = 10) {
+    Matrix<T> res(row, col);
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            res[i][j] = int(rnd()) % (C + C + 1) - C;
+        }
+    }
+    return res;
+}
+
+// finds basis of orthogonal complement of subspace with basis e with respect to a symmetrical bilinear form b
+template <typename T>
+vector<Matrix<T>> get_orthogonal_complement(const vector<Matrix<T>>& e, const Matrix<T>& b) {
+    Matrix<T> tmp(e.size(), b.row);
+    for (int i = 0; i < e.size(); i++) {
+        for (int j = 0; j < e[i].row; j++) {
+            tmp[i][j] = e[i][j][0];
+        }
+    }
+    return get_kernel(tmp * b);
+}
+
+template <typename T>
+vector<Matrix<T>> get_basis_from_span(const vector<Matrix<T>>& vec) {
+    Matrix<T> a(vec.size(), vec.front().row);
+    for (int i = 0; i < a.row; i++) {
+        for (int j = 0; j < a.col; j++) {
+            a[i][j] = vec[i][j][0];
+        }
+    }
+    Gauss(a);
+    vector<Matrix<T>> basis;
+    for (int i = 0; i < a.row; i++) {
+        Matrix<T> cur(a.col, 1);
+        for (int j = 0; j < a.col; j++) {
+            cur[j][0] = a[i][j];
+        }
+        if (!is_zero(cur)) {
+            basis.pb(cur);
+        }
+    }
+    return basis;
+}
+
+// calculates projection of vector a onto vector b
+template <typename T>
+Matrix<T> proj(const Matrix<T>& a, const Matrix<T>& b) {
+    return b * dot(a, b) / dot(b, b);
+}
+
+// transforms vectors from vec to an ORTHOGONAL (NOT ORTHONORMAL) basis of their span
+template <typename T>
+vector<Matrix<T>> gram_schmidt(vector<Matrix<T>> vec) {
+    vec = get_basis_from_span(vec);
+    vector<Matrix<T>> basis = {vec.front()};
+    for (int i = 1; i < vec.size(); i++) {
+        Matrix<T> cur = vec[i];
+        for (int j = 0; j < i; j++) {
+            cur -= proj(vec[i], basis[j]);
+        }
+        basis.pb(cur);
+    }
+    return basis;
+}
+
+// projection of vector a onto span of vectors from vec
+template <typename T>
+Matrix<T> proj(const Matrix<T>& a, vector<Matrix<T>> vec) {
+    vec = gram_schmidt(vec);
+    Matrix<T> res(a.row, a.col);
+    for (int i = 0; i < vec.size(); i++) {
+        res += vec[i] * dot(a, vec[i]) / dot(vec[i], vec[i]);
+    }
+    return res;
+}
+
+// orthogonal complement of vector a onto span of vectors from vec
+template <typename T>
+Matrix<T> orth_comp(const Matrix<T>& a, const vector<Matrix<T>>& vec) {
+    return a - proj(a, vec);
+}
+
+// square of norm of a
+template <typename T>
+T norm2(const Matrix<T>& a) {
+    return dot(a, a);
+}
+
+// norm of a
+template <typename T>
+ld norm(const Matrix<T>& a) {
+    return sqrt(ld(norm2(a)));
+}
+
+// angle between a and b
+template <typename T>
+ld angle(const Matrix<T>& a, const Matrix<T>& b) {
+    return acos(ld(dot(a, b)) / norm(a) / norm(b));
+}
+
+template <typename T>
+ld angle(const Matrix<T>& a, const vector<Matrix<T>>& vec) {
+    return angle(a, proj(a, vec));
+}
+
+// square of distance from a to span of vectors from vec
+template <typename T>
+T dist2(const Matrix<T>& a, const vector<Matrix<T>>& vec) {
+    return norm2(orth_comp(a, vec));
+}
+
+// distance from a to span of vectors from vec
+template <typename T>
+ld dist(const Matrix<T>& a, const vector<Matrix<T>>& vec) {
+    return norm(orth_comp(a, vec));
 }
 
 using Rat = Rational<int64_t>;
