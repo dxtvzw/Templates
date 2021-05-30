@@ -76,6 +76,9 @@ struct Rational {
     Rational& operator/=(const Rational& ot) {
         return *this = *this / ot;
     }
+    Rational& operator++(int) {
+        return *this += 1;
+    }
     friend bool operator==(const Rational& a, const Rational& b) {
         return a.p == b.p && a.q == b.q;
     }
@@ -114,7 +117,7 @@ template <typename T>
 struct Matrix {
     int row, col;
     vector<vector<T>> data;
-    Matrix(int _row, int _col, bool is_identity = 0) {
+    Matrix(int _row = 0, int _col = 0, bool is_identity = 0) {
         row = _row;
         col = _col;
         data.resize(row);
@@ -367,6 +370,7 @@ bool is_zero(const Matrix<T>& A) {
 // generates random solution to an equation A * x = 0
 template <typename T>
 Matrix<T> gen_any_solution(const Matrix<T>& A, int C = 10) {
+    Gauss(A);
     Matrix<T> v(A.col, 1);
     vector<int> is_pivot(A.col, -1);
     for (int i = 0; i < A.row; i++) {

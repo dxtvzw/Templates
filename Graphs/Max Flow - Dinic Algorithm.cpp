@@ -34,12 +34,12 @@ void add_edge(int s, int e, ll cap) {
 bool bfs(int src, int sink) {
     while (!q.empty()) q.pop();
     q.push(src);
-    for (int i=0; i<N; i++) dist[i] = -1;
+    for (int i = 0; i < N; i++) dist[i] = -1;
     dist[src] = 0;
     while (!q.empty() && dist[sink] == -1) {
         int v = q.front();
         q.pop();
-        for (int i=0; i<g[v].size(); i++) {
+        for (int i = 0; i < g[v].size(); i++) {
             int id = g[v][i];
             int u = edges[id].e;
             if (dist[u] == -1 && edges[id].flow < edges[id].cap) {
@@ -64,7 +64,7 @@ ll dfs(int v, ll flow, int sink) {
         ll pushed = dfs(u, min(flow, edges[id].cap - edges[id].flow), sink);
         if (pushed) {
             edges[id].flow += pushed;
-            edges[id^1].flow -= pushed;
+            edges[id ^ 1].flow -= pushed;
             return pushed;
         }
         ptr[v]++;
@@ -76,7 +76,7 @@ ll max_flow(int src, int sink) {
     ll flow = 0;
     while (1) {
         if (!bfs(src, sink)) break;
-        for (int i=0; i<N; i++) ptr[i] = 0;
+        for (int i = 0; i < N; i++) ptr[i] = 0;
         while (ll pushed = dfs(src, inf, sink)) {
             flow += pushed;
         }
