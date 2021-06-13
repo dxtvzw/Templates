@@ -58,7 +58,8 @@ void Kosaraju(int n) {
             comps.pb(comp);
         }
     }
-    // comps = reversed topsort
+    reverse(comps.begin(), comps.end());
+    // edges go from left to right
 }
 
 int main() {
