@@ -17,16 +17,16 @@ public:
     Modular(int new_val = 0) {
         val = new_val;
     }
-    Modular operator+(const Modular& ot) const {
-        if (val + ot.val >= mod) return val + ot.val - mod;
-        else return val + ot.val;
+    friend Modular operator+(const Modular& a, const Modular& b) {
+        if (a.val + b.val >= mod) return a.val + b.val - mod;
+        else return a.val + b.val;
     }
-    Modular operator-(const Modular& ot) const {
-        if (val - ot.val < 0) return val - ot.val + mod;
-        else return val - ot.val;
+    friend Modular operator-(const Modular& a, const Modular& b) {
+        if (a.val - b.val < 0) return a.val - b.val + mod;
+        else return a.val - b.val;
     }
-    Modular operator*(const Modular& ot) const {
-        return 1ll * val * ot.val % mod;
+    friend Modular operator*(const Modular& a, const Modular& b) {
+        return 1ll * a.val * b.val % mod;
     }
     friend Modular binpow(Modular a, ll n) {
         Modular res = 1;
@@ -69,6 +69,12 @@ public:
     }
     bool operator!=(const Modular& ot) const {
         return val != ot.val;
+    }
+    bool operator<(const Modular& ot) const {
+        return val < ot.val;
+    }
+    bool operator>(const Modular& ot) const {
+        return val > ot.val;
     }
 };
 
