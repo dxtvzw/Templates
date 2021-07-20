@@ -47,6 +47,24 @@ std::ostream& operator<<(std::ostream& dest, __int128_t val) {
     return dest;
 }
 
+template <typename T>
+T read() {
+    string s;
+    cin >> s;
+    T res = 0;
+    ll pw = 1; // be careful with this long long
+    for (int i = 0, dot = 0; i < s.size(); i++) {
+        if (s[i] == '.') {
+            dot = 1;
+        }
+        else {
+            res = res * 10 + (s[i] - '0');
+            if (dot) pw *= 10;
+        }
+    }
+    return res / pw;
+}
+
 int main() {
     ios_base::sync_with_stdio(0); cin.tie(0);
 #ifdef LOCAL
