@@ -52,6 +52,12 @@ public:
         ++(*this);
         return tmp;
     }
+    Modular operator+() const {
+        return *this;
+    }
+    Modular operator-() const {
+        return 0 - *this;
+    }
     Modular& operator+=(const Modular& ot) {
         return *this = *this + ot;
     }
