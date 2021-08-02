@@ -163,7 +163,7 @@ Point<real_t> intersect(Line<T> p, Line<T> q) {
     }
 }
 
-// solving quadratic equality
+// solving quadratic equation
 pair<real_t, real_t> solve_quad(real_t a, real_t b, real_t c) {
     real_t d = b * b - 4 * a * c;
     if (d < 0) {
@@ -197,7 +197,6 @@ ppp intersect(Line<T1> l, Circle<T2> w) {
         return ans;
     }
 }
-
 
 // invert point with respect to circle
 template <typename T>
@@ -312,7 +311,7 @@ Point<real_t> div_seg(Point<real_t> a, Point<real_t> b, real_t k) {
 
 #define rotate my_complex_rotation
 
-// rotation of point A by alpha degrees counterclockwise centered at point O
+// rotation of point A by alpha degrees (in radians) counterclockwise centered at point O
 Point<real_t> rotate(Point<real_t> O, Point<real_t> A, real_t alpha) {
     A -= O;
     A *= Point<real_t>{cos(alpha), sin(alpha)};

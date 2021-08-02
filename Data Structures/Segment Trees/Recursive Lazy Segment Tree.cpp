@@ -20,7 +20,7 @@ struct lazy_segment_tree {
             t[v] = a[tl];
             return;
         }
-        int tm = (tl + tr)/2;
+        int tm = (tl + tr) / 2;
         build(v + v, tl, tm);
         build(v + v + 1, tm + 1, tr);
         t[v] = merge(t[v + v], t[v + v + 1]);
@@ -42,7 +42,7 @@ struct lazy_segment_tree {
             push(v, tl, tr);
             return;
         }
-        int tm = (tl + tr)/2;
+        int tm = (tl + tr) / 2;
         update(l, r, x, v + v, tl, tm);
         update(l, r, x, v + v + 1, tm + 1, tr);
         t[v] = merge(t[v + v], t[v + v + 1]);
@@ -51,7 +51,7 @@ struct lazy_segment_tree {
         push(v, tl, tr);
         if (r < tl || tr < l) return good_value;
         if (l <= tl && tr <= r) return t[v];
-        int tm = (tl + tr)/2;
+        int tm = (tl + tr) / 2;
         ll res = merge(get(l, r, v + v, tl, tm), get(l, r, v + v + 1, tm + 1, tr));
         t[v] = merge(t[v + v], t[v + v + 1]);
         return res;

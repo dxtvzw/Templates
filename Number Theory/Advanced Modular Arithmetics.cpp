@@ -16,6 +16,8 @@ public:
     int val;
     Modular(int new_val = 0) {
         val = new_val;
+        if (val < 0) val += mod;
+        if (val >= mod) val -= mod;
     }
     friend Modular operator+(const Modular& a, const Modular& b) {
         if (a.val + b.val >= mod) return a.val + b.val - mod;
@@ -104,8 +106,8 @@ void init() {
     fact[0] = pw2[0] = pw3[0] = 1;
     for (int i = 1; i <= N - 1; i++) {
         fact[i] = fact[i - 1] * i;
-        pw2[i] = pw2[i - 1] * 2;
-        pw3[i] = pw3[i - 1] * 3;
+        pw2[i] = pw2[i - 1] + pw2[i - 1];
+        pw3[i] = pw3[i - 1] + pw3[i - 1] + pw3[i - 1];
     }
     inv_fact[N - 1] = inv(fact[N - 1]);
     for (int i = N - 2; i >= 0; i--) {

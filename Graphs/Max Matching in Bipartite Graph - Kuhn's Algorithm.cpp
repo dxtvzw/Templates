@@ -7,17 +7,17 @@ typedef pair<int, int> pii;
 #define pb push_back
 mt19937 rnd;
 
-const int N = 1e3 + 10;
+const int N = 2e5 + 10;
 vector<int> g[N];
-bool used[N];
+int used[N];
 bool used1[N];
 int match[N];
 
-bool dfs(int v) {
-    if (used[v]) return 0;
-    used[v] = 1;
+bool dfs(int v, int root) {
+    if (used[v] == root) return 0;
+    used[v] = root;
     for (int to : g[v]) {
-        if (!match[to] || dfs(match[to])) {
+        if (!match[to] || dfs(match[to], root)) {
             match[to] = v;
             return 1;
         }
@@ -29,9 +29,11 @@ int Kuhn(int n) {
     for (int i = 1; i <= n; i++) {
         match[i] = 0;
         used1[i] = 0;
+        used[i] = 0;
     }
     for (int i = 1; i <= n; i++) {
         if (used1[i]) continue;
+        shuffle(g[i].begin(), g[i].end(), rnd); // BE CAREFUL WITH THIS SHUFFLE
         for (int to : g[i]) {
             if (!match[to]) {
                 match[i] = to;
@@ -44,10 +46,7 @@ int Kuhn(int n) {
     }
     for (int i = 1; i <= n; i++) {
         if (used1[i]) continue;
-        for (int j = 1; j <= n; j++) {
-            used[j] = 0;
-        }
-        dfs(i);
+        dfs(i, i);
     }
     int cnt = 0;
     for (int i = 1; i <= n; i++) {
