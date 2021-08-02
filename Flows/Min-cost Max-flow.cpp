@@ -1,103 +1,131 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
+typedef __int128_t LL;
+typedef long double ld;
 typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
 #define F first
 #define S second
 #define pb push_back
-mt19937 rnd;
+mt19937 rnd(time(0));
 
-struct Edge {
-    int to;
-    ll flow, cap, cost;
-    int rev;
-};
-
-const int N = 200 + 10;
-const ll inf = 1e18;
-vector<Edge> g[N];
-int prev_edge[N], prev_vert[N];
-ll prio[N], cur_flow[N], dist[N];
-queue<int> q;
-bool in_queue[N];
-
-void add_edge(int s, int e, ll cap, ll cost) {
-    Edge forw = {e, 0, cap, cost, int(g[e].size())};
-    Edge back = {s, 0, 0, -cost, int(g[s].size())};
-    g[s].pb(forw);
-    g[e].pb(back);
-}
-
-void SPFA(int s) {
-    for (int i = 0; i < N; i++) {
-        dist[i] = inf;
+template <typename T>
+struct MCMF {
+    using pti = pair<T, int>;
+    struct edge {
+        int to, rev;
+        T cap, cost;
+    };
+    const T inf = numeric_limits<T>::max() / 2;
+    int n;
+    vector<vector<edge>> g;
+    vector<T> phi, dist;
+    vector<int> ptr;
+    vector<bool> inque, used;
+    queue<int> que;
+    priority_queue<pti, vector<pti>, greater<pti>> pq;
+    MCMF(int _n) {
+        n = _n;
+        g.resize(n);
+        phi.resize(n);
+        dist.resize(n);
+        inque.resize(n);
+        ptr.resize(n);
+        used.resize(n);
     }
-    dist[s] = 0;
-    q.push(s);
-    while (!q.empty()) {
-        int v = q.front();
-        q.pop();
-        in_queue[v] = 0;
-        for (int i = 0; i < g[v].size(); i++) {
-            Edge& e = g[v][i];
-            if (e.cap <= e.flow) continue;
-            int u = e.to;
-            if (dist[u] > dist[v] + e.cost) {
-                dist[u] = dist[v] + e.cost;
-                if (!in_queue[u]) {
-                    in_queue[u] = 1;
-                    q.push(u);
+    void add_edge(int s, int t, T cap, T cost) {
+        g[s].push_back({t, (int) g[t].size(), cap, cost});
+        g[t].push_back({s, (int) g[s].size() - 1, 0, -cost});
+    }
+    void prep(int src, int sink) {
+        fill(phi.begin(), phi.end(), inf);
+        fill(dist.begin(), dist.end(), inf);
+        que.push(src);
+        inque[src] = 1;
+        while (!que.empty()) {
+            int v = que.front();
+            que.pop();
+            inque[v] = 0;
+            for (auto& e : g[v]) {
+                if (e.cap > 0 && phi[e.to] > phi[v] + e.cost) {
+                    phi[e.to] = phi[v] + e.cost;
+                    if (!inque[e.to]) {
+                        que.push(e.to);
+                        inque[e.to] = 1;
+                    }
                 }
             }
         }
-    }
-}
-
-pair<ll, ll> min_cost_flow(int src, int sink, ll max_flow = inf) {
-    SPFA(src); //SPFA is not needed if all edge costs are non-negative
-    ll flow = 0, cost = 0;
-    while (flow < max_flow) {
-        priority_queue<ll> pq;
-        pq.push(src);
-        for (int i = 0; i < N; i++) {
-            prio[i] = inf;
+        for (int i = 0; i < n; i++) {
+            for (auto& e : g[i]) {
+                if (e.cap > 0) {
+                    e.cost += phi[i] - phi[e.to];
+                }
+            }
         }
-        prio[src] = 0;
-        cur_flow[src] = inf;
+        pq.push(pti(0, src));
+        dist[src] = 0;
         while (!pq.empty()) {
-            ll v = pq.top();
+            auto [val, v] = pq.top();
             pq.pop();
-            if ((v >> 32) != prio[v]) continue;
-            for (int i = 0; i < g[v].size(); i++) {
-                Edge& e = g[v][i];
-                int u = e.to;
-                if (e.cap <= e.flow) continue;
-                if (prio[u] > prio[v] + e.cost + dist[v] - dist[u]) {
-                    prio[u] = prio[v] + e.cost + dist[v] - dist[u];
-                    pq.push((prio[u] << 32) + u);
-                    prev_vert[u] = v;
-                    prev_edge[u] = i;
-                    cur_flow[u] = min(cur_flow[v], e.cap - e.flow);
+            if (dist[v] != val) continue;
+            for (auto& e : g[v]) {
+                if (e.cap > 0 && dist[e.to] > val + e.cost) {
+                    dist[e.to] = val + e.cost;
+                    pq.push(pti(dist[e.to], e.to));
                 }
             }
         }
-        if (prio[sink] == inf) break;
-        for (int i = 0; i < N; i++) {
-            dist[i] += prio[i];
-        }
-        ll pushed = min(cur_flow[sink], max_flow - flow);
-        flow += pushed;
-        int v = sink;
-        while (v != src) {
-            Edge& e = g[prev_vert[v]][prev_edge[v]];
-            e.flow += pushed;
-            g[v][e.rev].flow -= pushed;
-            cost += pushed * e.cost;
-            v = prev_vert[v];
-        }
     }
-    return {flow, cost};
-}
+    T dfs(int v, int sink, T flow) {
+        used[v] = 1;
+        if (v == sink) return flow;
+        for (; ptr[v] < g[v].size(); ptr[v]++) {
+            auto &e = g[v][ptr[v]];
+            if (!used[e.to] && dist[e.to] == e.cost + dist[v] && e.cap > 0) {
+                T res = dfs(e.to, sink, min(e.cap, flow));
+                if (res != 0) {
+                    e.cap -= res;
+                    g[e.to][e.rev].cap += res;
+                    return res;
+                }
+            }
+        }
+        return 0;
+    }
+    pair<T, T> match(int src, int sink) {
+        prep(src, sink);
+        for (int i = 0; i < n; i++) {
+            dist[i] += phi[sink] - phi[src];
+        }
+        T flow = 0, cost = 0;
+        while (true) {
+            fill(ptr.begin(), ptr.end(), 0);
+            fill(used.begin(), used.end(), 0);
+            T tmp = 0;
+            while ((tmp = dfs(src, sink, inf))) {
+                flow += tmp;
+                cost += dist[sink] * tmp;
+                fill(used.begin(), used.end(), 0);
+            }
+            tmp = inf;
+            for (int i = 0; i < n; i++) {
+                if (!used[i]) continue;
+                for (auto& e : g[i]) {
+                    if (e.cap > 0 && !used[e.to]) {
+                        tmp = min(tmp, (dist[i] + e.cost) - dist[e.to]);
+                    }
+                }
+            }
+            if (tmp > inf - n) break;
+            for (int i = 0; i < n; i++) {
+                if(!used[i]) dist[i] += tmp;
+            }
+        }
+        return {flow, cost};
+    }
+};
 
 int main() {
     ios_base::sync_with_stdio(0); cin.tie(0);
