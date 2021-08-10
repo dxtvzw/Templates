@@ -1,18 +1,22 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
+typedef __int128_t LL;
+typedef long double ld;
 typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
 #define F first
 #define S second
 #define pb push_back
-mt19937 rnd;
+mt19937 rnd(time(0));
 
+template <typename T>
 struct lazy_segment_tree {
     static const int N = 1e6 + 10;
-    const ll inf = 1e18;
-    const ll good_value = 0; // 0 for sum, -inf for max, and inf for min
-    ll a[N], t[4 * N], ch[4 * N];
-    ll merge(ll a, ll b) {
+    const T inf = numeric_limits<T>::max() / 2;
+    const T good_value = 0; // 0 for sum, -inf for max, and inf for min
+    T a[N], t[4 * N], ch[4 * N];
+    T merge(T a, T b) {
         return a + b;
     }
     void build(int v = 1, int tl = 1, int tr = N - 1) {
@@ -27,14 +31,14 @@ struct lazy_segment_tree {
     }
     void push(int v, int tl, int tr) {
         if (!ch[v]) return;
-        t[v] += 1ll * ch[v] * (tr - tl + 1); // tr - tl + 1 for sum and 1 for min/max
+        t[v] += ch[v] * (tr - tl + 1); // tr - tl + 1 for sum and 1 for min/max
         if (tl < tr) {
             ch[v + v] += ch[v];
             ch[v + v + 1] += ch[v];
         }
         ch[v] = 0;
     }
-    void update(int l, int r, ll x, int v = 1, int tl = 1, int tr = N - 1) {
+    void update(int l, int r, T x, int v = 1, int tl = 1, int tr = N - 1) {
         push(v, tl, tr);
         if (r < tl || tr < l) return;
         if (l <= tl && tr <= r) {
@@ -47,12 +51,12 @@ struct lazy_segment_tree {
         update(l, r, x, v + v + 1, tm + 1, tr);
         t[v] = merge(t[v + v], t[v + v + 1]);
     }
-    ll get(int l, int r, int v = 1, int tl = 1, int tr = N - 1) {
+    T get(int l, int r, int v = 1, int tl = 1, int tr = N - 1) {
         push(v, tl, tr);
         if (r < tl || tr < l) return good_value;
         if (l <= tl && tr <= r) return t[v];
         int tm = (tl + tr) / 2;
-        ll res = merge(get(l, r, v + v, tl, tm), get(l, r, v + v + 1, tm + 1, tr));
+        T res = merge(get(l, r, v + v, tl, tm), get(l, r, v + v + 1, tm + 1, tr));
         t[v] = merge(t[v + v], t[v + v + 1]);
         return res;
     }

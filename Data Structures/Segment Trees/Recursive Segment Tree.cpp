@@ -1,18 +1,22 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
+typedef __int128_t LL;
+typedef long double ld;
 typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
 #define F first
 #define S second
 #define pb push_back
-mt19937 rnd;
+mt19937 rnd(time(0));
 
+template <typename T>
 struct segment_tree {
     static const int N = 1e6 + 10;
-    const int inf = 1e9 + 10;
-    const int good_value = 0; // 0 for sum, -inf for max, and inf for min
-    int a[N], t[4 * N];
-    int merge(int x, int y) {
+    const T inf = numeric_limits<T>::max() / 2;
+    const T good_value = 0; // 0 for sum, -inf for max, and inf for min
+    T a[N], t[4 * N];
+    T merge(T x, T y) {
         return x + y;
     }
     void build(int v = 1, int tl = 1, int tr = N - 1) {
@@ -26,7 +30,7 @@ struct segment_tree {
         build(v + v + 1, tm + 1, tr);
         t[v] = merge(t[v + v], t[v + v + 1]);
     }
-    void update(int pos, int val, int v = 1, int tl = 1, int tr = N - 1) {
+    void update(int pos, T val, int v = 1, int tl = 1, int tr = N - 1) {
         if (tl > tr || tl > pos || pos > tr) return;
         if (tl == tr) {
             t[v] = val;
@@ -37,7 +41,7 @@ struct segment_tree {
         update(pos, val, v + v + 1, tm + 1, tr);
         t[v] = merge(t[v + v], t[v + v + 1]);
     }
-    int get(int l, int r, int v = 1, int tl = 1, int tr = N - 1) {
+    T get(int l, int r, int v = 1, int tl = 1, int tr = N - 1) {
         if (tl > tr || l > r || tl > r || l > tr) return good_value;
         if (l <= tl && tr <= r) {
             return t[v];
