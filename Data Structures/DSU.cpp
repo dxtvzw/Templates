@@ -9,23 +9,24 @@ mt19937 rnd;
 
 struct DSU {
     static const int N = 1e6 + 10;
-    int Parent[N], Rank[N], cnt;
-    void init(const int& n) {
+    int Parent[N], Rank[N], Size[N], cnt;
+    void init(int n) {
         for (int i = 1; i <= n; i++) {
-            Parent[i] = i, Rank[i] = 0;
+            Parent[i] = i, Rank[i] = 0, Size[i] = 1;
         }
         cnt = n;
     }
-    int find(const int& v) {
+    int find(int v) {
         if (Parent[v] == v) return v;
         else return Parent[v] = find(Parent[v]);
     }
-    void unite(const int& u, const int& v) {
-        int U = find(u), V = find(v);
-        if (U == V) return;
-        if (Rank[U] < Rank[V]) swap(U, V);
-        if (Rank[V] == Rank[U]) Rank[U]++;
-        Parent[V] = U, cnt--;
+    void unite(int u, int v) {
+        u = find(u), v = find(v);
+        if (u == v) return;
+        if (Rank[u] < Rank[v]) swap(u, v);
+        if (Rank[v] == Rank[u]) Rank[u]++;
+        Parent[v] = u, cnt--;
+        Size[u] += Size[v];
     }
 };
 

@@ -1,52 +1,62 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
-//typedef __int128_t LL;
+typedef __int128_t LL;
 typedef long double ld;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 #define F first
 #define S second
 #define pb push_back
-mt19937 rnd;
+mt19937 rnd(time(0));
 
-const int N = 5e5 + 5;
-const int L = 21;
+// tested on https://acm.timus.ru/problem.aspx?space=1&num=1553 for vertices
+// tested on https://codeforces.com/contest/1555/problem/F for edges
+
+// CHECK UPDATE OF THE SEGMENT TREE
+
+const bool hld_type = 1; // 0 is for weighted vertices, 1 is for weighted edges
+const int N = 3e5 + 10;
+const int L = 20;
 const int inf = 1e9 + 10;
+const int good_value = 0; // change this according to the merge operation
+
+int merge(int a, int b) {
+    return a + b;
+}
 
 struct segment_tree {
     int t[2 * N + 5];
     void build() {
         for (int i = N - 1; i > 0; i--) {
-            t[i] = min(t[i << 1], t[i << 1 | 1]);
+            t[i] = merge(t[i << 1], t[i << 1 | 1]);
         }
     }
     void update(int pos, int val) {
-        for (t[pos += N] = val; pos > 1; pos >>= 1) {
-            t[pos >> 1] = min(t[pos], t[pos ^ 1]);
+        for (t[pos += N] += val; pos > 1; pos >>= 1) {
+            t[pos >> 1] = merge(t[pos], t[pos ^ 1]);
         }
     }
     int get(int l, int r) {
-        int res = inf;
+        int res = good_value;
         for (l += N, r += N; l <= r; l >>= 1, r >>= 1) {
-            if (l & 1) res = min(res, t[l++]);
-            if (!(r & 1)) res = min(res, t[r--]);
+            if (l & 1) res = merge(res, t[l++]);
+            if (!(r & 1)) res = merge(res, t[r--]);
         }
         return res;
     }
 } tree;
 
 /*
+    tree_ptr - first unused position in the segment tree
     down[v] - child of v in its heavy path
     start[i] - array of starting positions of each heavy path
     st_prt - pointer to the first available cell in start[i]
     path_st[v] - highest vertex on v's heavy path
     pos[v] - position of v in the segment tree
-
-    values are contained in vertexes
 */
 
-int timer;
+int timer, tree_ptr;
 vector<int> g[N];
 int in[N], out[N];
 int up[N][L], down[N];
@@ -102,9 +112,10 @@ int dist(int u, int v) {
     return depth[u] + depth[v] - 2 * depth[lca(u, v)];
 }
 
-void heavy_light_decomposition(int n, int root = 1) {
+void heavy_light_decomposition(int root = 1) {
+    int mem = st_ptr;
     dfs_hld(root, root);
-    for (int i = 0, ptr = 0; i < st_ptr; i++) {
+    for (int i = mem; i < st_ptr; i++) {
         int v = start[i];
         while (v != root && is_heavy(up[v][0], v)) {
             down[up[v][0]] = v;
@@ -113,7 +124,7 @@ void heavy_light_decomposition(int n, int root = 1) {
         int cur_st = v;
         while (v) {
             path_st[v] = cur_st;
-            pos[v] = ptr++;
+            pos[v] = tree_ptr++;
             v = down[v];
         }
     }
@@ -123,14 +134,14 @@ void update(int v, int val) {
     tree.update(pos[v], val);
 }
 
-int get(int u, int v) {
+int get(int u, int v, bool flag = 0) {
     if (is_anc(u, v)) {
-        int res = inf;
+        int res = good_value;
         while (path_st[v] != path_st[u]) {
-            res = min(res, tree.get(pos[path_st[v]], pos[v]));
+            res = merge(res, tree.get(pos[path_st[v]], pos[v]));
             v = up[path_st[v]][0];
         }
-        res = min(res, tree.get(pos[u], pos[v]));
+        res = merge(res, tree.get(pos[u] + (hld_type || flag), pos[v]));
         return res;
     }
     else if (is_anc(v, u)) {
@@ -138,7 +149,7 @@ int get(int u, int v) {
     }
     else {
         int l = lca(u, v);
-        return min(get(l, u), get(l, v));
+        return merge(get(l, u), get(l, v, 1));
     }
 }
 
