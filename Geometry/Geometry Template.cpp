@@ -8,11 +8,11 @@ typedef pair<ll, ll> pll;
 #define F first
 #define S second
 #define pb push_back
-mt19937 rnd;
+mt19937 rnd(time(0));
 
 #define nan my_nan
 
-typedef long double real_t;
+typedef double real_t;
 const real_t eps = 1e-9;
 const real_t inf = 1e18 + 10;
 const real_t nan = inf + inf + 123123;
@@ -64,6 +64,9 @@ struct Point {
     }
     bool operator<(const Point& ot) const {
         return std::tie(x, y) < std::tie(ot.x, ot.y);
+    }
+    bool operator>(const Point& ot) const {
+        return std::tie(x, y) > std::tie(ot.x, ot.y);
     }
     // operators if T is an integer type
     bool operator==(const Point& ot) const {
@@ -276,7 +279,7 @@ real_t area(const vector<Point<T>>& v) {
 // area of triangle
 template <typename T>
 real_t area(Point<T> A, Point<T> B, Point<T> C) {
-    return cross(A, B, C) / 2;
+    return real_t(cross(A, B, C)) / 2;
 }
 
 // radius of circumscribed circle
