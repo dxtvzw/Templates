@@ -96,7 +96,7 @@ ostream& operator<<(ostream& ostr, const Modular<mod>& x) {
     return ostr << x.val;
 }
 
-const int mod = 1000000007;
+const int mod = 1000000007; // 998244353
 using Mint = Modular<mod>;
 
 const int N = 2e5 + 10;
