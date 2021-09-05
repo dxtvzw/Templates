@@ -38,6 +38,24 @@ public:
         }
         return res;
     }
+    /* ALTERNATIVE INVERSE FUNCTION USING EXTENDED EUCLIDEAN ALGORITHM
+    friend void gcd(int a, int b, Modular& x, Modular& y) {
+        if (a == 0) {
+            x = Modular(0);
+            y = Modular(1);
+            return;
+        }
+        Modular x1, y1;
+        gcd(b % a, a, x1, y1);
+        x = y1 - (b / a) * x1;
+        y = x1;
+    }
+    friend Modular inv(const Modular& a) {
+        Modular x, y;
+        gcd(a.val, mod, x, y);
+        return x;
+    }
+    */
     friend Modular inv(const Modular& a) {
         return binpow(a, mod - 2);
     }
