@@ -1,14 +1,16 @@
 #include <bits/stdc++.h>
 using namespace std;
+typedef unsigned int uint;
 typedef long long ll;
-//typedef __int128_t LL;
+typedef unsigned long long ull;
+typedef __int128_t LL;
 typedef long double ld;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 #define F first
 #define S second
 #define pb push_back
-mt19937 rnd;
+mt19937 rnd(time(0));
 
 
 int main() {
