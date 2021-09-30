@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
+typedef unsigned int uint;
 typedef long long ll;
+typedef unsigned long long ull;
 typedef __int128_t LL;
 typedef long double ld;
 typedef pair<int, int> pii;
@@ -12,12 +14,17 @@ mt19937 rnd(time(0));
 
 #define nan my_nan
 
-typedef double real_t;
+typedef long double real_t;
 const real_t eps = 1e-9;
 const real_t inf = 1e18 + 10;
 const real_t nan = inf + inf + 123123;
 const real_t pi = acos(-1);
 const long long mult_const = 2;
+
+real_t rand_real(real_t l = 0, real_t r = 1e9, real_t coef = 100000) {
+    real_t res = rnd() % ll((r - l) * coef);
+    return l + res / coef;
+}
 
 bool are_eq(real_t a, real_t b) {
     return abs(a - b) < eps;
@@ -96,6 +103,7 @@ istream& operator>>(istream& istr, Point<T>& p) {
 
 template <typename T>
 ostream& operator<<(ostream& ostr, const Point<T>& p) {
+    return ostr << p.x << " " << p.y;
     return ostr << "(" << p.x << ", " << p.y << ")";
 }
 
@@ -143,6 +151,9 @@ struct Circle {
         r *= mult_const;
         return *this;
     }
+    bool operator==(const Circle& ot) const {
+        return o == ot.o && r == ot.r;
+    }
 };
 
 template <typename T>
@@ -165,6 +176,10 @@ Point<real_t> intersect(Line<T> p, Line<T> q) {
         return {real_t(p.b * q.c - q.b * p.c) / real_t(q.b * p.a - q.a * p.b), real_t(q.a * p.c - q.c * p.a) / real_t(q.b * p.a - q.a * p.b)};
     }
 }
+
+/*
+        ================================ THIS MIGHT NOT WORK BEGIN ===================================
+*/
 
 // solving quadratic equation
 pair<real_t, real_t> solve_quad(real_t a, real_t b, real_t c) {
@@ -200,6 +215,10 @@ ppp intersect(Line<T1> l, Circle<T2> w) {
         return ans;
     }
 }
+
+/*
+        ================================ THIS MIGHT NOT WORK END ===================================
+*/
 
 // invert point with respect to circle
 template <typename T>
@@ -239,7 +258,7 @@ T dist2(Point<T> p, Point<T> q) {
 // distance between two points
 template <typename T>
 real_t dist(Point<T> p, Point<T> q) {
-    return sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
+    return sqrt(real_t((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y)));
 }
 
 // angle p O q
@@ -266,6 +285,9 @@ Line<T> perp_bis(Point<T> p, Point<T> q) {
     return Line<T>(2 * (p.x - q.x), 2 * (p.y - q.y), -((p.x - q.x) * (p.x + q.x) + (p.y - q.y) * (p.y + q.y))).fit();
 }
 
+/*
+    =============================== THIS AREA IS ALWAYS NON-NEGATIVE =================================================
+*/
 // area of polygon
 template <typename T>
 real_t area(const vector<Point<T>>& v) {
@@ -273,14 +295,18 @@ real_t area(const vector<Point<T>>& v) {
     for (int i = 0; i + 1 < v.size(); i++) {
         ans += cross(v[i], v[i + 1]);
     }
-    return ans / 2;
+    return abs(ans) / 2;
 }
 
 // area of triangle
 template <typename T>
 real_t area(Point<T> A, Point<T> B, Point<T> C) {
-    return real_t(cross(A, B, C)) / 2;
+    return abs(real_t(cross(A, B, C))) / 2;
 }
+
+/*
+    ==================================================================================================================
+*/
 
 // radius of circumscribed circle
 template <typename T>
@@ -322,6 +348,16 @@ Point<real_t> rotate(Point<real_t> O, Point<real_t> A, real_t alpha) {
     return A;
 }
 
+// closest between two points to the given one
+Point<real_t> get_closest(ppp p, Point<real_t> a) {
+    if (dist2(p.F, a) < dist2(p.S, a)) {
+        return p.F;
+    }
+    else {
+        return p.S;
+    }
+}
+
 // closest between two points to the given two
 Point<real_t> get_closest(ppp p, Point<real_t> a, Point<real_t> b) {
     if (dist(p.F, a) + dist(p.F, b) < dist(p.S, a) + dist(p.S, b)) {
@@ -354,6 +390,143 @@ template <typename T>
 bool on_seg(Point<T> a, Point<T> b, Point<T> c) {
     Line l = find_line(a, b);
     return min(a.x, b.x) <= c.x && c.x <= max(a.x, b.x)&& min(a.y, b.y) <= c.y && c.y <= max(a.y, b.y) && l.a * c.x + l.b * c.y + l.c == 0;
+}
+
+/*
+        ====================== NOT TESTED BEGIN ======================
+*/
+
+// calculate angle in a triangle (a, b, c) between a and b
+real_t get_angle(real_t a, real_t b, real_t c) {
+    return acos((a * a + b * b - c * c) / (2 * a * b));
+}
+
+template <typename T>
+real_t area_of_circle(Circle<T> a) {
+    return pi * a.r * a.r;
+}
+
+template <typename T>
+real_t area_of_circle_segment(Circle<T> a, real_t alpha) {
+    return alpha / 2 * a.r * a.r - sin(alpha) / 2 * a.r * a.r;
+}
+
+template <typename T>
+real_t area_of_circle_intersection(Circle<T> a, Circle<T> b) {
+    real_t d = dist(a.o, b.o);
+    if (d >= a.r + b.r) {
+        return 0;
+    }
+    else if (d <= abs(a.r - b.r)) {
+        return min(area_of_circle(a), area_of_circle(b));
+    }
+    return area_of_circle_segment(a, 2 * get_angle(a.r, d, b.r)) + area_of_circle_segment(b, 2 * get_angle(b.r, d, a.r));
+}
+
+template <typename T>
+real_t area_of_circle_union(Circle<T> a, Circle<T> b) {
+    return area_of_circle(a) + area_of_circle(b) - area_of_circle_intersection(a, b);
+}
+
+template <typename T>
+real_t area_of_circle_difference(Circle<T> a, Circle<T> b) {
+    return area_of_circle(a) - area_of_circle_intersection(a, b);
+}
+
+// area of intersection of semicircle a pointing down and circle b
+template <typename T>
+real_t area_of_semicirlce_circle_intersection(Circle<T> a, Circle<T> b) {
+    return 0;
+}
+
+/*
+        ====================== NOT TESTED END ======================
+*/
+
+// flag = 0 - no common points, -1 - same circles, 1 - circles touch, 2 - circles intersect
+struct CircleIntersection {
+    int flag;
+    Point<real_t> a, b;
+    CircleIntersection(int _flag) {
+        flag = _flag;
+    }
+    CircleIntersection(int _flag, Point<real_t> _a) {
+        flag = _flag;
+        a = _a;
+    }
+    CircleIntersection(int _flag, Point<real_t> _a, Point<real_t> _b) {
+        flag = _flag;
+        a = min(_a, _b);
+        b = max(_a, _b);
+    }
+};
+
+ostream& operator<<(ostream& ostr, CircleIntersection x) {
+    if (x.flag == 0 || x.flag == -1) {
+        return ostr << x.flag;
+    }
+    else if (x.flag == 1) {
+        return ostr << x.flag << "\n" << x.a;
+    }
+    else {
+        return ostr << x.flag << "\n" << x.a << "\n" << x.b;
+    }
+}
+
+// get closest point from cur to the circle a
+template <typename T>
+Point<real_t> get_on_circle(ppp cur, Circle<T> a) {
+    return abs(dist2(cur.F, a.o) - a.r * a.r) < abs(dist2(cur.S, a.o) - a.r * a.r) ? cur.F : cur.S;
+}
+
+// intersection of two circles
+// test on: https://official.contest.yandex.ru/contest/28976/problems/I/
+template <typename T>
+CircleIntersection intersect(Circle<T> A, Circle<T> B) {
+    Circle<real_t> a = {{A.o.x, A.o.y}, A.r};
+    Circle<real_t> b = {{B.o.x, B.o.y}, B.r};
+    T d2 = dist2(a.o, b.o);
+    real_t d = dist(a.o, b.o);
+    if (A.r < B.r) {
+        swap(a, b);
+        swap(A, B);
+    }
+    if (A.o == B.o) {
+        if (A.r == B.r) {
+            return {-1};
+        }
+        else {
+            return {0};
+        }
+    }
+    else if (d2 >= A.r * A.r) {
+        if (d2 > (A.r + B.r) * (A.r + B.r)) {
+            return {0};
+        }
+        else if (d2 == (A.r + B.r) * (A.r + B.r)) {
+            auto cur = intersect(find_line(a.o, b.o), a);
+            return {1, get_on_circle(cur, b)};
+        }
+        else {
+            real_t alpha = get_angle(a.r, d, b.r);
+            Point<real_t> p = a.o + (b.o - a.o) / d * a.r;
+            return {2, rotate(a.o, p, alpha), rotate(a.o, p, -alpha)};
+        }
+    }
+    else {
+        if (d2 < (A.r - B.r) * (A.r - B.r)) {
+            return {0};
+        }
+        else if (d2 == (A.r - B.r) * (A.r - B.r)) {
+            auto cur = intersect(find_line(a.o, b.o), a);
+            return {1, get_on_circle(cur, b)};
+        }
+        else {
+            real_t alpha = get_angle(a.r, d, b.r);
+            Point<real_t> p = a.o + (b.o - a.o) / d * a.r;
+            return {2, rotate(a.o, p, alpha), rotate(a.o, p, -alpha)};
+        }
+    }
 }
 
 int main() {
