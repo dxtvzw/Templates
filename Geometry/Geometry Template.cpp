@@ -21,9 +21,9 @@ const real_t nan = inf + inf + 123123;
 const real_t pi = acos(-1);
 const long long mult_const = 2;
 
-real_t rand_real(real_t l = 0, real_t r = 1e9, real_t coef = 100000) {
-    real_t res = rnd() % ll((r - l) * coef);
-    return l + res / coef;
+real_t rand_real(real_t l, real_t r) {
+    std::uniform_real_distribution<real_t> distribution(l, r);
+    return distribution(rnd);
 }
 
 bool are_eq(real_t a, real_t b) {
