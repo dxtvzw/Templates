@@ -10,7 +10,7 @@ typedef pair<ll, ll> pll;
 #define F first
 #define S second
 #define pb push_back
-mt19937 rnd(time(0));
+mt19937 rnd(time(nullptr));
 
 
 int main() {
