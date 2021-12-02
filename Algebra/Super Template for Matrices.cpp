@@ -1,14 +1,10 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
+
+std::mt19937 rnd;
+
+typedef long double real_t;
 
 template <typename T>
 ostream& operator<<(ostream& ostr, const vector<T>& poly) {
@@ -92,7 +88,7 @@ struct Rational {
         return a.p * b.q > a.q * b.p;
     }
     operator long double() const {
-        return ld(p) / ld(q);
+        return real_t(p) / real_t(q);
     }
 };
 
@@ -807,18 +803,18 @@ T norm2(const Matrix<T>& a) {
 
 // norm of a
 template <typename T>
-ld norm(const Matrix<T>& a) {
-    return sqrt(ld(norm2(a)));
+real_t norm(const Matrix<T>& a) {
+    return sqrt(real_t(norm2(a)));
 }
 
 // angle between a and b
 template <typename T>
-ld angle(const Matrix<T>& a, const Matrix<T>& b) {
-    return acos(ld(dot(a, b)) / norm(a) / norm(b));
+real_t angle(const Matrix<T>& a, const Matrix<T>& b) {
+    return acos(real_t(dot(a, b)) / norm(a) / norm(b));
 }
 
 template <typename T>
-ld angle(const Matrix<T>& a, const vector<Matrix<T>>& vec) {
+real_t angle(const Matrix<T>& a, const vector<Matrix<T>>& vec) {
     return angle(a, proj(a, vec));
 }
 
@@ -830,7 +826,7 @@ T dist2(const Matrix<T>& a, const vector<Matrix<T>>& vec) {
 
 // distance from a to span of vectors from vec
 template <typename T>
-ld dist(const Matrix<T>& a, const vector<Matrix<T>>& vec) {
+real_t dist(const Matrix<T>& a, const vector<Matrix<T>>& vec) {
     return norm(orth_comp(a, vec));
 }
 
@@ -838,15 +834,16 @@ using Rat = Rational<int64_t>;
 using Mat = Matrix<Rat>;
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

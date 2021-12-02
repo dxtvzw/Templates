@@ -1,14 +1,6 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 #define data my_data
 
@@ -22,12 +14,12 @@ int lg[N], pw[L];
 
 void dfs_lca(int v = 1, int p = 1) {
     in[v] = tour.size();
-    tour.pb(v);
+    tour.push_back(v);
     for (int to : g[v]) {
         if (to != p) {
             depth[to] = depth[v] + 1;
             dfs_lca(to, v);
-            tour.pb(v);
+            tour.push_back(v);
         }
     }
     out[v] = tour.size() - 1;
@@ -83,15 +75,16 @@ void precalc_lca() {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
-    precalc_lca();
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

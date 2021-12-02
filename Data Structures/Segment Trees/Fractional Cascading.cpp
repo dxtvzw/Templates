@@ -1,16 +1,6 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef unsigned int uint;
-typedef long long ll;
-typedef unsigned long long ull;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd(time(0));
 
 // segment tree with fractional cascading
 // get(l, r, x) = #i: l <= i <= r and x <= a[i]
@@ -28,17 +18,17 @@ struct segment_tree {
         int l = 0, r = 0;
         while (l < a.size() && r < b.size()) {
             if (a[l].val <= b[r].val) {
-                res.pb(a[l++]);
+                res.push_back(a[l++]);
             }
             else {
-                res.pb(b[r++]);
+                res.push_back(b[r++]);
             }
         }
         while (l < a.size()) {
-            res.pb(a[l++]);
+            res.push_back(a[l++]);
         }
         while (r < b.size()) {
-            res.pb(b[r++]);
+            res.push_back(b[r++]);
         }
         for (int i = 0, j = 0; i < res.size(); i++) {
             while (j < a.size() && a[j].val < res[i].val) {
@@ -97,15 +87,16 @@ struct segment_tree {
 } tree;
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

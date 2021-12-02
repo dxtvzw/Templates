@@ -1,18 +1,9 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd(time(0));
 
 template <typename T>
 struct MCMF {
-    using pti = pair<T, int>;
     struct edge {
         int to, rev;
         T cap, cost;
@@ -24,15 +15,8 @@ struct MCMF {
     vector<int> ptr;
     vector<bool> inque, used;
     queue<int> que;
-    priority_queue<pti, vector<pti>, greater<pti>> pq;
-    MCMF(int _n) {
-        n = _n;
-        g.resize(n);
-        phi.resize(n);
-        dist.resize(n);
-        inque.resize(n);
-        ptr.resize(n);
-        used.resize(n);
+    priority_queue<pair<T, int>, vector<pair<T, int> >, greater<pair<T, int> > > pq;
+    MCMF(int _n) : n(_n), g(_n), phi(_n), dist(_n), inque(_n), ptr(_n), used(_n) {
     }
     void add_edge(int s, int t, T cap, T cost) {
         g[s].push_back({t, (int) g[t].size(), cap, cost});
@@ -42,11 +26,11 @@ struct MCMF {
         fill(phi.begin(), phi.end(), inf);
         fill(dist.begin(), dist.end(), inf);
         que.push(src);
-        inque[src] = 1;
+        inque[src] = true;
         while (!que.empty()) {
             int v = que.front();
             que.pop();
-            inque[v] = 0;
+            inque[v] = false;
             for (auto& e : g[v]) {
                 if (e.cap > 0 && phi[e.to] > phi[v] + e.cost) {
                     phi[e.to] = phi[v] + e.cost;
@@ -64,7 +48,7 @@ struct MCMF {
                 }
             }
         }
-        pq.push(pti(0, src));
+        pq.emplace(0, src);
         dist[src] = 0;
         while (!pq.empty()) {
             auto [val, v] = pq.top();
@@ -73,13 +57,13 @@ struct MCMF {
             for (auto& e : g[v]) {
                 if (e.cap > 0 && dist[e.to] > val + e.cost) {
                     dist[e.to] = val + e.cost;
-                    pq.push(pti(dist[e.to], e.to));
+                    pq.emplace(dist[e.to], e.to);
                 }
             }
         }
     }
     T dfs(int v, int sink, T flow) {
-        used[v] = 1;
+        used[v] = true;
         if (v == sink) return flow;
         for (; ptr[v] < g[v].size(); ptr[v]++) {
             auto &e = g[v][ptr[v]];
@@ -128,15 +112,16 @@ struct MCMF {
 };
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

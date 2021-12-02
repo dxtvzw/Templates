@@ -1,26 +1,22 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef pair<int, int> pii;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 // Max constraints: 1 <= n, m <= 100; -100 <= A[i][j] <= 100; -1000000 <= b[i] <= 1000000; -100 <= c[i] <= 100;
 
-typedef vector<double> vec;
-const double eps = 1e-8;
+typedef double real_t;
+
+const real_t eps = 1e-8;
 
 // Ax <= b, maximize c^Tx
 // x >= 0
 
-vec simplex(vector<vec> A, vec b, vec c) {
+vector<real_t> simplex(vector<vector<real_t>> A, vector<real_t> b, vector<real_t> c) {
     int n = A.size();
     int m = A[0].size() + 1;
     int r = n;
     int s = m - 1;
-    vector<vec> D(n + 2, vec(m + 1));
+    vector<vector<real_t>> D(n + 2, vector<real_t>(m + 1));
     vector<int> ix(n + m);
     for (int i = 0; i < n + m; i++) ix[i] = i;
     for (int i = 0; i < n; i++) {
@@ -33,7 +29,7 @@ vec simplex(vector<vec> A, vec b, vec c) {
         D[n][j] = c[j];
     }
     D[n + 1][m - 1] = -1;
-    double d;
+    real_t d;
     while (1) {
         if (r < n) {
             swap(ix[s], ix[r + m]);
@@ -76,7 +72,7 @@ vec simplex(vector<vec> A, vec b, vec c) {
     if (D[n + 1][m] < -eps) {
         return {}; // infeasible, no solution
     }
-    vec x(m - 1);
+    vector<real_t> x(m - 1);
     for (int i = m; i < n + m; i++) {
         if (ix[i] < m - 1) {
             x[ix[i]] = D[i - m][m];
@@ -86,15 +82,16 @@ vec simplex(vector<vec> A, vec b, vec c) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
-   return 0;
+    return 0;
 }

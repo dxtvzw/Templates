@@ -1,11 +1,6 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef pair<int, int> pii;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 //O(n^3)
 
@@ -18,15 +13,15 @@ queue<int> q;
 
 int lca(int a, int b) {
     for (int i = 0; i <= N - 1; i++) {
-        used_lca[i] = 0;
+        used_lca[i] = false;
     }
-    while (1) {
+    while (true) {
         a = base[a];
-        used_lca[a] = 1;
+        used_lca[a] = true;
         if (!match[a]) break;
         a = parent[match[a]];
     }
-    while (1) {
+    while (true) {
         b = base[b];
         if (used_lca[b]) return b;
         b = parent[match[b]];
@@ -35,7 +30,7 @@ int lca(int a, int b) {
 
 void mark_path(int v, int b, int child) {
     while (base[v] != b) {
-        blossom[base[v]] = blossom[base[match[v]]] = 1;
+        blossom[base[v]] = blossom[base[match[v]]] = true;
         parent[v] = child;
         child = match[v];
         v = parent[match[v]];
@@ -47,34 +42,33 @@ int find_path(int root, int n) {
         used[i] = parent[i] = 0;
         base[i] = i;
     }
-    used[root] = 1;
+    used[root] = true;
     while (!q.empty()) q.pop();
     q.push(root);
     while (!q.empty()) {
         int v = q.front();
         q.pop();
-        for (int to : g[v]) {
-        if (base[v] == base[to] || match[v] == to)  continue;
+        for (int to: g[v]) {
+            if (base[v] == base[to] || match[v] == to) continue;
             if (to == root || match[to] && parent[match[to]]) {
-            int cur_base = lca (v, to);
-                for (int i=1; i<=n; i++) blossom[i] = 0;
+                int cur_base = lca(v, to);
+                for (int i = 1; i <= n; i++) blossom[i] = false;
                 mark_path(v, cur_base, to);
                 mark_path(to, cur_base, v);
-                for (int i=1; i<=n; i++) {
+                for (int i = 1; i <= n; i++) {
                     if (blossom[base[i]]) {
                         base[i] = cur_base;
                         if (!used[i]) {
-                            used[i] = 1;
+                            used[i] = true;
                             q.push(i);
                         }
                     }
                 }
-            }
-            else if (!parent[to]) {
+            } else if (!parent[to]) {
                 parent[to] = v;
                 if (!match[to]) return to;
                 to = match[to];
-                used[to] = 1;
+                used[to] = true;
                 q.push(to);
             }
         }
@@ -97,15 +91,15 @@ void Edmonds(int n) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
-
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

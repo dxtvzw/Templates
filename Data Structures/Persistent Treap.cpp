@@ -1,14 +1,8 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
+
+std::mt19937 rnd;
 
 struct Node {
     int val, sum, sz;
@@ -75,36 +69,36 @@ ppn Split_pref(pNode t, int k) {
     else if (sz(t->l) + 1 <= k) {
         ppn nxt = Split_pref(t->r, k - sz(t->l) - 1);
         pNode res = Copy(t);
-        res->r = nxt.F;
+        res->r = nxt.first;
         recalc(res);
-        return {res, nxt.S};
+        return {res, nxt.second};
     }
     else {
         ppn nxt = Split_pref(t->l, k);
         pNode res = Copy(t);
-        res->l = nxt.S;
+        res->l = nxt.second;
         recalc(res);
-        return {nxt.F, res};
+        return {nxt.first, res};
     }
 }
 
 ppn Split(pNode t, int lef, int rig) {
     ppn a = Split_pref(t, lef - 1);
-    ppn b = Split_pref(a.S, rig - lef + 1);
-    return {b.F, Merge(a.F, b.S)};
+    ppn b = Split_pref(a.second, rig - lef + 1);
+    return {b.first, Merge(a.first, b.second)};
 }
 
 vector<pNode> Split_in_three(pNode t, int lef, int rig) {
     ppn a = Split_pref(t, lef - 1);
-    ppn b = Split_pref(a.S, rig - lef + 1);
-    return {a.F, b.F, b.S};
+    ppn b = Split_pref(a.second, rig - lef + 1);
+    return {a.first, b.first, b.second};
 }
 
 int get_sum(pNode& t, int lef, int rig) {
     ppn a = Split_pref(t, lef - 1);
-    ppn b = Split_pref(a.S, rig - lef + 1);
-    int ans = sum(b.F);
-    t = Merge(a.F, Merge(b.F, b.S));
+    ppn b = Split_pref(a.second, rig - lef + 1);
+    int ans = sum(b.first);
+    t = Merge(a.first, Merge(b.first, b.second));
     return ans;
 }
 
@@ -126,15 +120,16 @@ const int N = 2e5 + 10;
 pNode roots[N];
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

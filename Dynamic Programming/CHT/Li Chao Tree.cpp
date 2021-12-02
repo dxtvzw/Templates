@@ -1,26 +1,21 @@
 #include <bits/stdc++.h>
-using namespace std;
-typedef pair<int, int> pii;
-typedef long long ll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
-typedef complex<ll> point;
+using namespace std;
+
+typedef complex<long long> point;
 #define x real
 #define y imag
 
-ll dot(point a, point b) {
+long long dot(point a, point b) {
     return (conj(a) * b).x();
 }
 
-ll f(point a, ll x) {
+long long f(point a, long long x) {
     return dot(a, {x, 1});
 }
 
 const int N = 1e6 + 10;
-const ll inf = 1e18;
+const long long inf = 1e18;
 
 point line[4 * N];
 
@@ -38,7 +33,7 @@ void add_line(point nw, int v = 1, int l = 0, int r = N) {
     else add_line(nw, v + v + 1, m, r);
 }
 
-ll get(int x, int v = 1, int l = 0, int r = N) {
+long long get(int x, int v = 1, int l = 0, int r = N) {
     int m = (l + r) / 2;
     if (r - l == 1) return f(line[v], x);
     else if (x < m) return min(f(line[v], x), get(x, v + v, l, m));
@@ -46,15 +41,16 @@ ll get(int x, int v = 1, int l = 0, int r = N) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

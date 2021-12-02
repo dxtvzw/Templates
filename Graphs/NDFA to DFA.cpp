@@ -1,16 +1,6 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef unsigned int uint;
-typedef long long ll;
-typedef unsigned long long ull;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd(time(0));
 
 // test on problem: https://official.contest.yandex.com/ptz-summer-2021/contest/28728/problems/I5/?success=52478567#7/2021_05_22/uLnusSUiEb
 
@@ -31,15 +21,15 @@ int ptr[2][M], flag[M];
 int dist[M];
 
 void add_edge(int u, int v) {
-    g[0][u][v] = g[1][u][v] = 1;
+    g[0][u][v] = g[1][u][v] = true;
 }
 
 void init() {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            g[0][i][j] = g[1][i][j] = 0;
+            g[0][i][j] = g[1][i][j] = false;
         }
-        mark[i] = 0;
+        mark[i] = false;
     }
 }
 
@@ -124,15 +114,16 @@ int calc(int n) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

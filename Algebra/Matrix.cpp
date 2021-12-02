@@ -1,33 +1,23 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-//typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 template <typename T>
 struct Matrix {
     int row, col;
     vector<vector<T>> data;
-    Matrix(int _row, int _col, bool is_identity = 0) {
+    Matrix(int _row, int _col, bool is_identity = false) {
         row = _row;
         col = _col;
-        data.resize(row);
-        for (int i = 0; i < row; i++) {
-            data[i].resize(col, 0);
-        }
+        data.resize(row, vector<T>(col, 0));
         if (is_identity) {
+            assert(row == col);
             for (int i = 0; i < row; i++) {
                 data[i][i] = 1;
             }
         }
     }
-    Matrix(vector<vector<T>> _data): data(std::move(_data)) {
+    Matrix(vector<vector<T>>&& _data): data(std::forward<decltype(_data)>(_data)) {
         row = data.size();
         col = data[0].size();
     }
@@ -110,15 +100,16 @@ Matrix<T> binpow(Matrix<T> a, int n) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

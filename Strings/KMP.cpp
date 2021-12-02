@@ -1,11 +1,6 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef pair<int, int> pii;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 vector<int> calc_pref_func(string s) {
     int n = s.size();
@@ -29,21 +24,22 @@ vector<int> kmp(string pattern, string text) {
     int k = pattern.length();
     vector<int> ans;
     for (int i = k + 1; i < s.length(); i++) {
-        if (pref[i] == k) ans.pb(i - 2 * k);
+        if (pref[i] == k) ans.push_back(i - 2 * k);
     }
     return ans;
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

@@ -1,11 +1,8 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef pair<int, int> pii;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
+
+std::mt19937 rnd;
 
 const int N = 2e5 + 10;
 vector<int> g[N];
@@ -14,21 +11,21 @@ bool used1[N];
 int match[N];
 
 bool dfs(int v, int root) {
-    if (used[v] == root) return 0;
+    if (used[v] == root) return false;
     used[v] = root;
     for (int to : g[v]) {
         if (!match[to] || dfs(match[to], root)) {
             match[to] = v;
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 int Kuhn(int n) {
     for (int i = 1; i <= n; i++) {
         match[i] = 0;
-        used1[i] = 0;
+        used1[i] = false;
         used[i] = 0;
     }
     for (int i = 1; i <= n; i++) {
@@ -38,8 +35,8 @@ int Kuhn(int n) {
             if (!match[to]) {
                 match[i] = to;
                 match[to] = i;
-                used1[i] = 1;
-                used1[to] = 1;
+                used1[i] = true;
+                used1[to] = true;
                 break;
             }
         }
@@ -58,15 +55,15 @@ int Kuhn(int n) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
-
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

@@ -213,7 +213,7 @@ void print(int n, int m) {
 
 void stress() {
     int C = 1000;
-    while (1) {
+    while (true) {
         int n = rnd() % 10000 + 1;
         bool bad_test = 0;
         for (int i = 1; i <= n && !bad_test; i++) {

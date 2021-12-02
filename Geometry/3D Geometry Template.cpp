@@ -1,25 +1,20 @@
 #include <bits/stdc++.h>
-using namespace std;
-typedef long long ll;
-typedef long double ld;
-typedef pair<int, int> pii;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
-ll gcd(ll a, ll b) {
-    if (!a || !b) return a + b;
-    else return __gcd(a, b);
+using namespace std;
+
+typedef long long val_t;
+
+val_t gcd(val_t a, val_t b) {
+    return !a || !b ? abs(a + b) : __gcd(a, b);
 }
 
 struct Vec {
-    ll x, y, z;
-    bool is_zero() {
+    val_t x = 0, y = 0, z = 0;
+    [[nodiscard]] bool is_zero() const {
         return x == 0 && y == 0 && z == 0;
     }
     void fit() {
-        ll g = gcd(gcd(abs(x), abs(y)), abs(z));
+        val_t g = gcd(gcd(abs(x), abs(y)), abs(z));
         if (g > 0) {
             x /= g, y /= g, z /= g;
         }
@@ -27,23 +22,23 @@ struct Vec {
             x *= -1, y *= -1, z *= -1;
         }
     }
-    Vec operator-(const Vec ot) {
+    Vec operator-(const Vec ot) const {
         return {x - ot.x, y - ot.y, z - ot.z};
     }
-    Vec operator+(const Vec ot) {
+    Vec operator+(const Vec ot) const {
         return {x + ot.x, y + ot.y, z + ot.z};
     }
-    void operator-=(const Vec ot) {
-        *this = *this - ot;
+    Vec& operator-=(const Vec ot) {
+        return *this = *this - ot;
     }
-    void operator+=(const Vec ot) {
-        *this = *this + ot;
+    Vec& operator+=(const Vec ot) {
+        return *this = *this + ot;
     }
-    Vec operator*(const ll ot) {
+    Vec operator*(const val_t ot) const {
         return {x * ot, y * ot, z * ot};
     }
-    void operator*=(const ll ot) {
-        *this = *this * ot;
+    Vec& operator*=(const val_t ot) {
+        return *this = *this * ot;
     }
     bool operator<(const Vec& ot) const {
         return std::tie(x, y, z) < std::tie(ot.x, ot.y, ot.z);
@@ -60,9 +55,9 @@ struct Line {
 };
 
 struct Rat {
-    ll p, q;
+    val_t p = 0, q = 1;
     void fit() {
-        ll g = gcd(abs(p), abs(q));
+        val_t g = gcd(abs(p), abs(q));
         if (g > 0) {
             p /= g, q /= g;
         }
@@ -70,8 +65,9 @@ struct Rat {
             p *= -1, q *= -1;
         }
     }
-    void operator=(const ll& ot) {
+    Rat& operator=(val_t ot) {
         p = ot, q = 1;
+        return *this;
     }
     bool operator<(const Rat& ot) const {
         return p * ot.q < q * ot.p;
@@ -93,7 +89,7 @@ struct Point {
 
 struct Plane {
     Vec norm;
-    ll shift;
+    val_t shift = 0;
     bool operator<(const Plane& ot) const {
         return std::tie(norm, shift) < std::tie(ot.norm, ot.shift);
     }
@@ -116,14 +112,14 @@ ostream& operator <<(ostream& ostr, const Point& ot) {
 }
 
 Vec cross(Vec v, Vec u) {
-    Vec res;
-    res.x = v.y * u.z - v.z * u.y;
-    res.y = v.z * u.x - v.x * u.z;
-    res.z = v.x * u.y - v.y * u.x;
-    return res;
+    return {
+            v.y * u.z - v.z * u.y,
+            v.z * u.x - v.x * u.z,
+            v.x * u.y - v.y * u.x
+    };
 }
 
-ll dot(Vec v, Vec u) {
+val_t dot(Vec v, Vec u) {
     return v.x * u.x + v.y * u.y + v.z * u.z;
 }
 
@@ -143,7 +139,7 @@ bool do_inter(Line p, Line q) {
 Point inter(Line p, Line q) {
     Vec r = cross(q.a - p.a, q.B - p.a);
     Vec s = cross(q.a - p.B, q.B - p.B);
-    ll k, l;
+    val_t k, l;
     if(s.x != 0 || r.x != 0) {
         k = -s.x, l = r.x;
     }
@@ -165,15 +161,16 @@ Point inter(Line p, Line q) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

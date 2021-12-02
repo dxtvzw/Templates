@@ -1,11 +1,6 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef pair<int, int> pii;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 struct DSU {
     static const int N = 5e3 + 10;
@@ -39,7 +34,7 @@ double dist(Point a, Point b) {
 
 const int N = 5e3 + 10;
 Point a[N];
-pii best[N];
+pair<int, int> best[N];
 double ans;
 
 void unite(const int& u, const int& v) {
@@ -54,14 +49,14 @@ double Boruvka(int n) {
             for (int j = 1; j <= n; j++) {
                 if (dsu.find(i) == dsu.find(j)) continue;
                 int I = dsu.find(i);
-                if (!best[I].F || dist(a[best[I].F], a[best[I].S]) > dist(a[i], a[j])) {
+                if (!best[I].first || dist(a[best[I].first], a[best[I].second]) > dist(a[i], a[j])) {
                     best[I] = {i, j};
                 }
             }
         }
         for (int i = 1; i <= n; i++) {
-            if (best[i].F) {
-                unite(best[i].F, best[i].S);
+            if (best[i].first) {
+                unite(best[i].first, best[i].second);
                 best[i] = {0, 0};
             }
         }
@@ -70,8 +65,9 @@ double Boruvka(int n) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
@@ -83,8 +79,8 @@ int main() {
     }
     cout << Boruvka(n) << "\n";
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

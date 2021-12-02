@@ -1,29 +1,15 @@
 #include <bits/stdc++.h>
-using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
-template <typename T>
+using namespace std;
+
+template <typename T = long long>
 struct Rational {
     T p, q;
-    Rational() {
-        p = 0;
-        q = 1;
+    Rational() : p(0), q(1) {
     }
-    Rational(T val) {
-        p = val;
-        q = 1;
+    Rational(T val) : p(val), q(1) {
     }
-    Rational(T num, T den) {
-        p = num;
-        q = den;
+    Rational(T num, T den) : p(num), q(den) {
         fix();
     }
     Rational& fix() {
@@ -46,16 +32,16 @@ struct Rational {
         return Rational(-p, q);
     }
     Rational operator+(const Rational& ot) const {
-        return Rational(p * ot.q + q * ot.p, q * ot.q);
+        return {p * ot.q + q * ot.p, q * ot.q};
     }
     Rational operator-(const Rational& ot) const {
-        return Rational(p * ot.q - q * ot.p, q * ot.q);
+        return {p * ot.q - q * ot.p, q * ot.q};
     }
     Rational operator*(const Rational& ot) const {
-        return Rational(p * ot.p, q * ot.q);
+        return {p * ot.p, q * ot.q};
     }
     Rational operator/(const Rational& ot) const {
-        return Rational(p * ot.q, q * ot.p);
+        return {p * ot.q, q * ot.p};
     }
     Rational& operator+=(const Rational& ot) {
         return *this = *this + ot;
@@ -101,15 +87,16 @@ ostream& operator<<(ostream& ostr, const Rational<T>& r) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

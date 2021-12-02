@@ -1,16 +1,12 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef pair<int, int> pii;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
+
+typedef double real_t;
 
 const double eps = 1e-8;
-typedef vector<double> vec;
 
-vec Gauss(vector<vec> a) {
+vector<real_t> Gauss(vector<vector<real_t>> a) {
     int n = a.size();
     int m = a[0].size() - 1;
     vector<int> where(m, -1);
@@ -38,7 +34,7 @@ vec Gauss(vector<vec> a) {
         }
         row++;
     }
-    vec ans(m, 0);
+    vector<real_t> ans(m, 0);
     for (int i = 0; i < m; i++) {
         if (where[i] != -1) {
             ans[i] = a[where[i]][m] / a[where[i]][i];
@@ -65,15 +61,16 @@ vec Gauss(vector<vec> a) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
-   return 0;
+    return 0;
 }

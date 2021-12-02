@@ -1,11 +1,6 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef pair<int, int> pii;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 const int N = 2e5 + 10;
 vector<int> g[2][N];
@@ -14,8 +9,8 @@ vector<int> post;
 vector<vector<int>> comps;
 
 void add_edge(int u, int v) {
-    g[0][u].pb(v);
-    g[1][v].pb(u);
+    g[0][u].push_back(v);
+    g[1][v].push_back(u);
 }
 
 void dfs_inv(int v) {
@@ -25,12 +20,12 @@ void dfs_inv(int v) {
             dfs_inv(to);
         }
     }
-    post.pb(v);
+    post.push_back(v);
 }
 
 void dfs(int v, vector<int>& comp) {
     used[v] = 1;
-    comp.pb(v);
+    comp.push_back(v);
     for (int to : g[0][v]) {
         if (!used[to]) {
             dfs(to, comp);
@@ -55,7 +50,7 @@ void Kosaraju(int n) {
         if (!used[v]) {
             vector<int> comp;
             dfs(v, comp);
-            comps.pb(comp);
+            comps.push_back(comp);
         }
     }
     reverse(comps.begin(), comps.end());
@@ -63,15 +58,16 @@ void Kosaraju(int n) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

@@ -1,31 +1,28 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef pair<int, int> pii;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 template<int mod>
 class Modular {
 public:
     int val;
-    Modular(int new_val = 0) {
-        val = new_val;
+    Modular() : val(0) {}
+    Modular(int new_val) : val(new_val) {
+        assert(0 <= val && val < mod);
+#warning DELETE THIS ASSERT
     }
-    Modular operator+(const Modular& ot) const {
-        if (val + ot.val >= mod) return val + ot.val - mod;
-        else return val + ot.val;
+    friend Modular operator+(const Modular& a, const Modular& b) {
+        if (a.val + b.val >= mod) return a.val + b.val - mod;
+        else return a.val + b.val;
     }
-    Modular operator-(const Modular& ot) const {
-        if (val - ot.val < 0) return val - ot.val + mod;
-        else return val - ot.val;
+    friend Modular operator-(const Modular& a, const Modular& b) {
+        if (a.val - b.val < 0) return a.val - b.val + mod;
+        else return a.val - b.val;
     }
-    Modular operator*(const Modular& ot) const {
-        return 1ll * val * ot.val % mod;
+    friend Modular operator*(const Modular& a, const Modular& b) {
+        return 1ll * a.val * b.val % mod;
     }
-    friend Modular binpow(Modular a, ll n) {
+    friend Modular binpow(Modular a, long long n) {
         Modular res = 1;
         for (; n; n >>= 1) {
             if (n & 1) res *= a;
@@ -33,6 +30,24 @@ public:
         }
         return res;
     }
+    /* ALTERNATIVE INVERSE FUNCTION USING EXTENDED EUCLIDEAN ALGORITHM
+    friend void gcd(int a, int b, Modular& x, Modular& y) {
+        if (a == 0) {
+            x = Modular(0);
+            y = Modular(1);
+            return;
+        }
+        Modular x1, y1;
+        gcd(b % a, a, x1, y1);
+        x = y1 - (b / a) * x1;
+        y = x1;
+    }
+    friend Modular inv(const Modular& a) {
+        Modular x, y;
+        gcd(a.val, mod, x, y);
+        return x;
+    }
+    */
     friend Modular inv(const Modular& a) {
         return binpow(a, mod - 2);
     }
@@ -48,6 +63,12 @@ public:
         Modular tmp = *this;
         ++(*this);
         return tmp;
+    }
+    Modular operator+() const {
+        return *this;
+    }
+    Modular operator-() const {
+        return 0 - *this;
     }
     Modular& operator+=(const Modular& ot) {
         return *this = *this + ot;
@@ -67,6 +88,15 @@ public:
     bool operator!=(const Modular& ot) const {
         return val != ot.val;
     }
+    bool operator<(const Modular& ot) const {
+        return val < ot.val;
+    }
+    bool operator>(const Modular& ot) const {
+        return val > ot.val;
+    }
+    explicit operator int() const {
+        return val;
+    }
 };
 
 template<int mod>
@@ -82,6 +112,7 @@ ostream& operator<<(ostream& ostr, const Modular<mod>& x) {
 template <int mod>
 struct PolyHash {
     int N;
+    std::mt19937 rnd;
     Modular<mod> p = rnd() % 10000 + 1000;
     vector<Modular<mod>> pw;
     vector<Modular<mod>> pref;
@@ -110,15 +141,16 @@ const int m5 = 5003;
 const int m6 = 6007;
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
-   return 0;
+    return 0;
 }

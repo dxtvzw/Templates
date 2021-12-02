@@ -1,18 +1,13 @@
 #include <bits/stdc++.h>
-using namespace std;
-typedef pair<int, int> pii;
-typedef long long ll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
-typedef complex<ll> point;
+using namespace std;
+
+typedef complex<long long> point;
 #define x real
 #define y imag
 
 const int N = 1e5 + 10;
-const ll inf = 1e18;
+const long long inf = 1e18;
 const point init_line = {0, inf};
 
 struct Node {
@@ -21,24 +16,24 @@ struct Node {
     point line;
     Node(int L = -N, int R = N) {
         l = L, r = R;
-        lef = NULL, rig = NULL;
+        lef = nullptr, rig = nullptr;
         line = init_line;
     }
 };
 
-ll dot(point a, point b) {
+long long dot(point a, point b) {
     return (conj(a) * b).x();
 }
 
-ll f(point a, ll x) {
+long long f(point a, long long x) {
     return dot(a, {x, 1});
 }
 
-point line[4*N];
+point line[4 * N];
 Node *root[N];
 
 void build() {
-    for (int i=0; i<4*N; i++) line[i] = {0, inf};
+    for (int i = 0; i < 4 * N; i++) line[i] = {0, inf};
 }
 
 void add_line(point nw, Node *v) {
@@ -49,48 +44,49 @@ void add_line(point nw, Node *v) {
     if (mid) swap(v->line, nw);
     if (v->l + 1 == v->r) return;
     else if (lef != mid) {
-        if (v->lef == NULL) v->lef = new Node(v->l, m);
+        if (v->lef == nullptr) v->lef = new Node(v->l, m);
         add_line(nw, v->lef);
     }
     else {
-        if (v->rig == NULL) v->rig = new Node(m, v->r);
+        if (v->rig == nullptr) v->rig = new Node(m, v->r);
         add_line(nw, v->rig);
     }
 }
 
-ll get(int x, Node *v) {
+long long get(int x, Node *v) {
     int m = (v->l + v->r) / 2;
     if (v->l + 1 == v->r) return f(v->line, x);
     else if (x < m) {
-        if (v->lef == NULL) return f(v->line, x);
+        if (v->lef == nullptr) return f(v->line, x);
         else return min(f(v->line, x), get(x, v->lef));
     }
     else {
-        if (v->rig == NULL) return f(v->line, x);
+        if (v->rig == nullptr) return f(v->line, x);
         else return min(f(v->line, x), get(x, v->rig));
     }
 }
 
 void merge(Node *v, Node *u) {
     add_line(u->line, v);
-    if (u->lef != NULL) merge(v, u->lef);
-    if (u->rig != NULL) merge(v, u->rig);
+    if (u->lef != nullptr) merge(v, u->lef);
+    if (u->rig != nullptr) merge(v, u->rig);
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
     int n;
     cin >> n;
-    for (int i=1; i<=n; i++) {
+    for (int i = 1; i <= n; i++) {
         root[i] = new Node();
     }
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

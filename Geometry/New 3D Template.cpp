@@ -1,16 +1,8 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef unsigned int uint;
-typedef long long ll;
-typedef unsigned long long ull;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd(time(0));
+
+std::mt19937 rnd;
 
 #define nan my_nan
 
@@ -71,20 +63,15 @@ struct Point {
     }
     // operators if T is an integer type
     bool operator==(const Point& ot) const {
-        return x == ot.x && y == ot.y && z == ot.z;
+        if constexpr (std::is_integral_v<T>) {
+            return x == ot.x && y == ot.y && z == ot.z;
+        } else {
+            return are_eq(x, ot.x) && are_eq(y, ot.y) && are_eq(z, ot.z);
+        }
     }
     bool operator!=(const Point& ot) const {
-        return x != ot.x || y != ot.y || z != ot.z;
+        return !(*this == ot);
     }
-    // operators if T is not an integer type
-    /*
-    bool operator==(const Point& ot) const {
-        return are_eq(x, ot.x) && are_eq(y, ot.y);
-    }
-    bool operator!=(const Point& ot) const {
-        return !are_eq(x, ot.x) || !are_eq(y, ot.y);
-    }
-    */
 };
 
 typedef pair<Point<real_t>, Point<real_t>> ppp;
@@ -126,17 +113,16 @@ real_t dist(Point<T> a, Point<T> b) {
     return sqrt(real_t((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z)));
 }
 
-
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
-
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

@@ -1,14 +1,6 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd(time(0));
 
 struct union_enumerate {
     static const int N = 1e6 + 10;
@@ -22,7 +14,7 @@ struct union_enumerate {
         vector<int> res;
         int u = v;
         do {
-            res.pb(u);
+            res.push_back(u);
             u = next[u];
         } while (u != v);
         return res;
@@ -33,9 +25,9 @@ struct union_enumerate {
             if (!used[i]) {
                 vector<int> cur = enumerate(i);
                 for (int j : cur) {
-                    used[j] = 1;
+                    used[j] = true;
                 }
-                res.pb(cur);
+                res.push_back(cur);
             }
         }
         return res;
@@ -57,7 +49,7 @@ void absorb(int u, int v) {
 };
 
 void dfs(int v, int p) {
-    used[v] = 1;
+    used[v] = true;
     in[v] = timer++;
     for (int to : g[v]) {
         if (to == v) {
@@ -111,7 +103,7 @@ vector<vector<int>> three_edge_connectivity(int n) {
         low[i] = N;
         deg[i] = 0;
         path[i] = N;
-        used[i] = 0;
+        used[i] = false;
     }
     tcc.init(n);
     timer = 0;
@@ -124,15 +116,16 @@ vector<vector<int>> three_edge_connectivity(int n) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

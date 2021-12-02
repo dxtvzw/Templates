@@ -1,21 +1,13 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd(time(0));
 
 // tested on https://acm.timus.ru/problem.aspx?space=1&num=1553 for vertices
 // tested on https://codeforces.com/contest/1555/problem/F for edges
 
 // CHECK UPDATE OF THE SEGMENT TREE
 
-const bool hld_type = 1; // 0 is for weighted vertices, 1 is for weighted edges
+const bool hld_type = true; // false is for weighted vertices, true is for weighted edges
 const int N = 3e5 + 10;
 const int L = 20;
 const int inf = 1e9 + 10;
@@ -70,10 +62,10 @@ bool is_heavy(int v, int to) {
 
 void dfs_hld(int v = 1, int p = 1) {
     in[v] = ++timer;
-	up[v][0] = p;
-	for (int i = 1; i < L; i++) {
-		up[v][i] = up[up[v][i - 1]][i - 1];
-	}
+    up[v][0] = p;
+    for (int i = 1; i < L; i++) {
+        up[v][i] = up[up[v][i - 1]][i - 1];
+    }
     sz[v] = 1;
     for (int to : g[v]) {
         if (to != p) {
@@ -96,16 +88,16 @@ void dfs_hld(int v = 1, int p = 1) {
 }
 
 bool is_anc(int u, int v) {
-	return in[u] <= in[v] && in[v] <= out[u];
+    return in[u] <= in[v] && in[v] <= out[u];
 }
 
 int lca(int u, int v) {
-	if (is_anc(u, v)) return u;
-	else if (is_anc(v, u)) return v;
-	for (int i = L - 1; i >= 0; i--) {
-		if (!is_anc(up[u][i], v)) u = up[u][i];
-	}
-	return up[u][0];
+    if (is_anc(u, v)) return u;
+    else if (is_anc(v, u)) return v;
+    for (int i = L - 1; i >= 0; i--) {
+        if (!is_anc(up[u][i], v)) u = up[u][i];
+    }
+    return up[u][0];
 }
 
 int dist(int u, int v) {
@@ -134,7 +126,7 @@ void update(int v, int val) {
     tree.update(pos[v], val);
 }
 
-int get(int u, int v, bool flag = 0) {
+int get(int u, int v, bool flag = false) {
     if (is_anc(u, v)) {
         int res = good_value;
         while (path_st[v] != path_st[u]) {
@@ -149,20 +141,21 @@ int get(int u, int v, bool flag = 0) {
     }
     else {
         int l = lca(u, v);
-        return merge(get(l, u), get(l, v, 1));
+        return merge(get(l, u), get(l, v, true));
     }
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

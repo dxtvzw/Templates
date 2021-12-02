@@ -1,14 +1,6 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 typedef vector<int> poly;
 
@@ -24,7 +16,7 @@ ostream& operator<<(ostream& ostr, const poly& p) {
 
 void fix(poly& p) {
     while (!p.empty() && p.back() == 0) p.pop_back();
-    if (p.empty()) p.pb(0);
+    if (p.empty()) p.push_back(0);
 }
 
 poly add(const poly& p, const poly& q) {
@@ -58,15 +50,16 @@ poly get_poly(int mask, int n) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

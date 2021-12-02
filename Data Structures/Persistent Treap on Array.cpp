@@ -1,14 +1,8 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd(time(0));
+
+std::mt19937 rnd;
 
 struct Node {
     int val, sz, uni, cnt, l, r;
@@ -83,23 +77,23 @@ int Merge(int t1, int t2) {
     return res;
 }
 
-pii Split_pref(int t, int k) {
+pair<int, int> Split_pref(int t, int k) {
     if (sz(t) <= k) {
         return {t, 0};
     }
     else if (sz(l(t)) + 1 <= k) {
-        pii nxt = Split_pref(r(t), k - sz(l(t)) - 1);
+        pair<int, int> nxt = Split_pref(r(t), k - sz(l(t)) - 1);
         int res = Copy(t);
-        r(res) = nxt.F;
+        r(res) = nxt.first;
         recalc(res);
-        return {res, nxt.S};
+        return {res, nxt.second};
     }
     else {
-        pii nxt = Split_pref(l(t), k);
+        pair<int, int> nxt = Split_pref(l(t), k);
         int res = Copy(t);
-        l(res) = nxt.S;
+        l(res) = nxt.second;
         recalc(res);
-        return {nxt.F, res};
+        return {nxt.first, res};
     }
 }
 
@@ -110,11 +104,11 @@ void dfs_print(int v) {
     if (r(v)) dfs_print(r(v));
 }
 
-pii find(int v, int x) {
+pair<int, int> find(int v, int x) {
     if (!v) return {0, 0};
     if (val(v) < x) {
-        pii res = find(r(v), x);
-        res.S += sz(l(v)) + 1;
+        pair<int, int> res = find(r(v), x);
+        res.second += sz(l(v)) + 1;
         return res;
     }
     else if (val(v) == x) {
@@ -126,16 +120,16 @@ pii find(int v, int x) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }
-

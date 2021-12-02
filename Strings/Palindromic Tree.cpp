@@ -1,11 +1,6 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef pair<int, int> pii;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 const int N = 3e5 + 10, sigma = 30;
 
@@ -65,12 +60,14 @@ void add_node(int idx) {
     tree[curNode].link = tree[temp].to[s[idx] - 'a'];
     tree[curNode].dist = tree[tree[curNode].link].dist + 1;
 }
+
 // dp[i] = number of palindromes ending on index i
 int dp[N];
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
@@ -82,8 +79,8 @@ int main() {
         dp[i] = tree[curNode].dist;
     }
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

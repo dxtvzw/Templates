@@ -1,38 +1,30 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 // tested on https://codeforces.com/contest/1519/problem/E
 
 const int N = 1e6 + 10;
-vector<pii> ans;
-vector<pii> g[N];
+vector<pair<int, int>> ans;
+vector<pair<int, int>> g[N];
 int depth[N], mem[N];
 bool used[N], in_tree[N], dead[N];
 
 void add_edge(int u, int v, int id) {
-    g[u].pb({v, id});
-    g[v].pb({u, id});
+    g[u].emplace_back(v, id);
+    g[v].emplace_back(u, id);
 }
 
 void add(int i, int j) {
-    ans.pb({i, j});
-    dead[i] = dead[j] = 1;
+    ans.emplace_back(i, j);
+    dead[i] = dead[j] = true;
 }
 
 void dfs(int v) {
-    used[v] = 1;
+    used[v] = true;
     for (auto [to, id] : g[v]) {
         if (!used[to]) {
-            in_tree[id] = 1;
+            in_tree[id] = true;
             depth[to] = depth[v] + 1;
             dfs(to);
         }
@@ -44,7 +36,7 @@ void dfs(int v) {
                 add(id, mem[to]);
             }
             else {
-                children.pb(id);
+                children.push_back(id);
             }
         }
     }
@@ -54,7 +46,7 @@ void dfs(int v) {
     vector<int> extra;
     for (auto [to, id] : g[v]) {
         if (!in_tree[id] && !dead[id]) {
-            extra.pb(id);
+            extra.push_back(id);
         }
     }
     for (int i = 0; i + 1 < extra.size(); i += 2) {
@@ -72,15 +64,16 @@ void dfs(int v) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

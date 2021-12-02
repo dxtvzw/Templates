@@ -1,26 +1,16 @@
 #include <bits/stdc++.h>
-using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
-// 2-vertex connectivity
+using namespace std;
 
 const int N = 1e5 + 10;
 vector<int> g[N];
 bool used[N];
 int depth[N], up[N];
 int max_col;
-vector<pii> edges[N];
+vector<pair<int, int>> edges[N];
 
 void dfs1(int v) {
-    used[v] = 1;
+    used[v] = true;
     up[v] = depth[v];
     for (int to : g[v]) {
         if (!used[to]) {
@@ -35,25 +25,26 @@ void dfs1(int v) {
 }
 
 void dfs2(int v, int col) {
-    used[v] = 1;
+    used[v] = true;
     for (int to : g[v]) {
         if (depth[to] == depth[v] - 1) {
             continue;
         }
         else if (!used[to]) {
             int nxt = up[to] >= depth[v] ? ++max_col : col;
-            edges[nxt].pb({v, to});
+            edges[nxt].emplace_back(v, to);
             dfs2(to, nxt);
         }
         else if (depth[to] < depth[v]) {
-            edges[col].pb({v, to});
+            edges[col].emplace_back(v, to);
         }
     }
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
@@ -62,8 +53,8 @@ int main() {
     for (int i = 1; i <= m; i++) {
         int u, v;
         cin >> u >> v;
-        g[u].pb(v);
-        g[v].pb(u);
+        g[u].push_back(v);
+        g[v].push_back(u);
     }
     for (int i = 1; i <= n; i++) {
         if (!used[i]) {
@@ -71,7 +62,7 @@ int main() {
         }
     }
     for (int i = 1; i <= n; i++) {
-        used[i] = 0;
+        used[i] = false;
     }
     for (int i = 1; i <= n; i++) {
         if (!used[i]) {
@@ -79,8 +70,8 @@ int main() {
         }
     }
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

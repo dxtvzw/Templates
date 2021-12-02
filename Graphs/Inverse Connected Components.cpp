@@ -1,14 +1,6 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 struct DSU {
     static const int N = 1e6 + 10;
@@ -38,13 +30,13 @@ set<int> can;
 bool used[N];
 
 void dfs(int v, int root) {
-    used[v] = 1;
+    used[v] = true;
     dsu.unite(v, root);
     can.erase(v);
     vector<int> tmp;
     for (int to : can) {
         if (!g[v].count(to)) {
-            tmp.pb(to);
+            tmp.push_back(to);
         }
     }
     for (int to : tmp) {
@@ -68,8 +60,9 @@ void get_inverse_comps(int n) {
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
@@ -84,8 +77,8 @@ int main() {
     get_inverse_comps(n);
     cout << dsu.cnt - 1 << "\n";
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }

@@ -1,20 +1,12 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-typedef __int128_t LL;
-typedef long double ld;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-#define F first
-#define S second
-#define pb push_back
-mt19937 rnd;
 
 const int N = 5e5 + 10;
-vector<pii> ans[N];
+vector<pair<int, int>> ans[N];
 int s[N], p[N];
 int z[N], z1[N], z2[N];
-ll sc[N], sc1[N], sc2[N];
+long long sc[N], sc1[N], sc2[N];
 
 void calcZ(int n) {
     for (int i = 0; i < n; i++) {
@@ -60,15 +52,15 @@ void solve(int l, int r) {
         if (z1[len - k] > 0) {
             int L = max(l, m - k - z2[k]);
             int R = min(m, m - 2 * k + z1[len - k] + 1);
-            if (L < R) ans[k].pb({L, R});
+            if (L < R) ans[k].push_back({L, R});
         }
         if (z1[len - k] == k) {
-            ans[k].pb({m - k, m - k + 1});
+            ans[k].push_back({m - k, m - k + 1});
         }
         if (z2[len - k] > 0) {
             int L = max(m - k + 1, m - z2[len - k]);
             int R = min(r - 2 * k + 1, m - k + z1[k] + 1);
-            if (L < R) ans[k].pb({L, R});
+            if (L < R) ans[k].push_back({L, R});
         }
     }
     solve(m, r);
@@ -96,25 +88,26 @@ void build(int n) {
 void find_number_of_tandems(int n) {
     solve(0, n);
     for (int len = 1; len <= n; len++) {
-        pii cur = {0, 0};
+        pair<int, int> cur = {0, 0};
         ans[len].erase(unique(ans[len].begin(), ans[len].end()), ans[len].end());
-        for (pii z : ans[len]) {
-            if (cur.S < z.F) {
-                update(len, cur.F, cur.S);
+        for (pair<int, int> z : ans[len]) {
+            if (cur.second < z.first) {
+                update(len, cur.first, cur.second);
                 cur = z;
             } else {
-                cur.S = z.S;
+                cur.second = z.second;
             }
         }
-        update(len, cur.F, cur.S);
+        update(len, cur.first, cur.second);
     }
     build(n);
     // sc[i] = # of k-tandems (string repeats k times)
 }
 
 int main() {
-    ios_base::sync_with_stdio(0); cin.tie(0);
-#ifdef LOCAL
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef LOCAL_ALIKHAN
     freopen("input.txt", "r", stdin);
 #endif
 
@@ -129,8 +122,8 @@ int main() {
     }
     cout << "\n";
 
-#ifdef LOCAL
-    cerr << "\nTime elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+#ifdef LOCAL_ALIKHAN
+    cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
     return 0;
 }
