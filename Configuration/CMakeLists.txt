@@ -7,6 +7,9 @@ add_executable(C__
         solution.cpp)
 
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
 
 target_compile_definitions(C__ PRIVATE "LOCAL_ALIKHAN")
 target_compile_options(C__ PRIVATE "-g")
