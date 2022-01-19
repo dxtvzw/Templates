@@ -24,8 +24,8 @@ bool are_eq(real_t a, real_t b) {
 
 template<typename T>
 struct Point {
-    T x, y;
-    int id;
+    T x = 0;
+    T y = 0;
 
     Point &fit() {
         x *= mult_const;
@@ -74,11 +74,11 @@ struct Point {
     }
 
     bool operator<(const Point &ot) const {
-        return std::tie(x, y) < std::tie(ot.x, ot.y);
+        return x < ot.x || (x == ot.x && y < ot.y);
     }
 
     bool operator>(const Point &ot) const {
-        return std::tie(x, y) > std::tie(ot.x, ot.y);
+        return ot < *this;
     }
 
     bool operator==(const Point &ot) const {
@@ -113,6 +113,7 @@ struct Line {
 
     Line(T _a, T _b, T _c) {
         a = _a, b = _b, c = _c;
+        fit();
     }
 
     Line &fit() {
@@ -132,7 +133,7 @@ struct Line {
     }
 
     bool operator<(const Line &ot) const {
-        return std::tie(a, b, c) < std::tie(ot.a, ot.b, ot.c);
+        return tie(a, b, c) < tie(ot.a, ot.b, ot.c);
     }
 };
 
@@ -158,7 +159,11 @@ struct Circle {
     }
 
     bool operator==(const Circle &ot) const {
-        return o == ot.o && r == ot.r;
+        if constexpr (is_integral_v<T>) {
+            return o == ot.o && r == ot.r;
+        } else {
+            return o == ot.o && are_eq(r, ot.r);
+        }
     }
 };
 
@@ -263,7 +268,7 @@ T dist2(Point<T> p, Point<T> q) {
 // distance between two points
 template<typename T>
 real_t dist(Point<T> p, Point<T> q) {
-    return sqrt(real_t((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y)));
+    return sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
 }
 
 // angle p O q
@@ -281,7 +286,7 @@ real_t angle(real_t a, real_t b, real_t c) {
 // line passing through two points
 template<typename T>
 Line<T> find_line(Point<T> p, Point<T> q) {
-    return Line<T>(p.y - q.y, q.x - p.x, p.x * q.y - p.y * q.x).fit();
+    return {p.y - q.y, q.x - p.x, p.x * q.y - p.y * q.x};
 }
 
 // perpendicular bisector
@@ -290,10 +295,7 @@ Line<T> perp_bis(Point<T> p, Point<T> q) {
     return Line<T>(2 * (p.x - q.x), 2 * (p.y - q.y), -((p.x - q.x) * (p.x + q.x) + (p.y - q.y) * (p.y + q.y))).fit();
 }
 
-/*
-    =============================== THIS AREA IS ALWAYS NON-NEGATIVE =================================================
-*/
-// area of polygon
+// area of polygon (always non-negative)
 template<typename T>
 real_t area(const vector<Point<T>> &v) {
     real_t ans = cross(v.back(), v.front());
@@ -303,15 +305,11 @@ real_t area(const vector<Point<T>> &v) {
     return abs(ans) / 2;
 }
 
-// area of triangle
+// area of triangle (always non-negative)
 template<typename T>
 real_t area(Point<T> A, Point<T> B, Point<T> C) {
     return abs(real_t(cross(A, B, C))) / 2;
 }
-
-/*
-    ==================================================================================================================
-*/
 
 // radius of circumscribed circle
 template<typename T>
@@ -336,6 +334,15 @@ vector<Point<T>> convex_hull(vector<Point<T>> v) {
     }
     hull.resize(k - 1);
     return hull;
+}
+
+template<typename T>
+vector<Point<T>> convex_hull(int n, Point<T>* p) {
+    vector<Point<T>> v;
+    for (int i = 1; i <= n; i++) {
+        v.push_back(p[i]);
+    }
+    return convex_hull(v);
 }
 
 // divides segment in given ration AC = k, BC = 1 - k
@@ -396,57 +403,6 @@ bool on_seg(Point<T> a, Point<T> b, Point<T> c) {
            l.a * c.x + l.b * c.y + l.c == 0;
 }
 
-/*
-        ====================== NOT TESTED BEGIN ======================
-*/
-
-// calculate angle in a triangle (a, b, c) between a and b
-real_t get_angle(real_t a, real_t b, real_t c) {
-    return acos((a * a + b * b - c * c) / (2 * a * b));
-}
-
-template<typename T>
-real_t area_of_circle(Circle<T> a) {
-    return pi * a.r * a.r;
-}
-
-template<typename T>
-real_t area_of_circle_segment(Circle<T> a, real_t alpha) {
-    return alpha / 2 * a.r * a.r - sin(alpha) / 2 * a.r * a.r;
-}
-
-template<typename T>
-real_t area_of_circle_intersection(Circle<T> a, Circle<T> b) {
-    real_t d = dist(a.o, b.o);
-    if (d >= a.r + b.r) {
-        return 0;
-    } else if (d <= abs(a.r - b.r)) {
-        return min(area_of_circle(a), area_of_circle(b));
-    }
-    return area_of_circle_segment(a, 2 * get_angle(a.r, d, b.r)) +
-           area_of_circle_segment(b, 2 * get_angle(b.r, d, a.r));
-}
-
-template<typename T>
-real_t area_of_circle_union(Circle<T> a, Circle<T> b) {
-    return area_of_circle(a) + area_of_circle(b) - area_of_circle_intersection(a, b);
-}
-
-template<typename T>
-real_t area_of_circle_difference(Circle<T> a, Circle<T> b) {
-    return area_of_circle(a) - area_of_circle_intersection(a, b);
-}
-
-// area of intersection of semicircle a pointing down and circle b
-template<typename T>
-real_t area_of_semicirlce_circle_intersection(Circle<T> a, Circle<T> b) {
-    return 0;
-}
-
-/*
-        ====================== NOT TESTED END ======================
-*/
-
 // flag = 0 - no common points, -1 - same circles, 1 - circles touch, 2 - circles intersect
 struct CircleIntersection {
     int flag;
@@ -478,7 +434,7 @@ ostream &operator<<(ostream &ostr, CircleIntersection x) {
     }
 }
 
-// get closest point from cur to the circle a
+// get the closest point from cur to the circle a
 template<typename T>
 Point<real_t> get_on_circle(ppp cur, Circle<T> a) {
     return abs(dist2(cur.first, a.o) - a.r * a.r) < abs(dist2(cur.second, a.o) - a.r * a.r) ? cur.first : cur.second;
@@ -509,7 +465,7 @@ CircleIntersection intersect(Circle<T> A, Circle<T> B) {
             auto cur = intersect(find_line(a.o, b.o), a);
             return {1, get_on_circle(cur, b)};
         } else {
-            real_t alpha = get_angle(a.r, d, b.r);
+            real_t alpha = angle(a.r, d, b.r);
             Point<real_t> p = a.o + (b.o - a.o) / d * a.r;
             return {2, rotate(a.o, p, alpha), rotate(a.o, p, -alpha)};
         }
@@ -520,7 +476,7 @@ CircleIntersection intersect(Circle<T> A, Circle<T> B) {
             auto cur = intersect(find_line(a.o, b.o), a);
             return {1, get_on_circle(cur, b)};
         } else {
-            real_t alpha = get_angle(a.r, d, b.r);
+            real_t alpha = angle(a.r, d, b.r);
             Point<real_t> p = a.o + (b.o - a.o) / d * a.r;
             return {2, rotate(a.o, p, alpha), rotate(a.o, p, -alpha)};
         }
@@ -535,8 +491,8 @@ int main() {
 #endif
 
 
+
 #ifdef LOCAL_ALIKHAN
     cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
-    return 0;
 }
