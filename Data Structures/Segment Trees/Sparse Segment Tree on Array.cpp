@@ -14,7 +14,7 @@ private:
     static const Value val_init = 0;                               //////////////////// CHANGE
     static const Value lazy_init = 0;                             //////////////////// CHANGE
 
-    static const Range range_inf = numeric_limits<Value>::max() / 2 - 10;
+    static const Range range_inf = numeric_limits<Range>::max() / 2 - 10;
     static const Range LB = -range_inf;                  //////////////////// CHANGE
     static const Range RB = range_inf;                  //////////////////// CHANGE
 
