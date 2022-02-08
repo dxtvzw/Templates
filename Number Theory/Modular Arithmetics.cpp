@@ -8,8 +8,6 @@ public:
     int val;
     Modular() : val(0) {}
     Modular(int new_val) : val(new_val) {
-        assert(0 <= val && val < mod);
-#warning DELETE THIS ASSERT
     }
     friend Modular operator+(const Modular& a, const Modular& b) {
         if (a.val + b.val >= mod) return a.val + b.val - mod;

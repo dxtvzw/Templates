@@ -2,164 +2,177 @@
 
 using namespace std;
 
-typedef long long ll;
-typedef __int128_t LL;
-
-typedef vector<ll> poly;
-
-ostream &operator<<(ostream &ostr, const poly &x) {
-    for (ll it: x) ostr << it << " ";
-    return ostr;
-}
-
-const int B = 3;
-const ll P[4] = {998244353, 1045430273, 1053818881, 1051721729};
-const ll G[4] = {565042129, 36657000, 973782742, 531741956};
-
-struct NTT {
-    static const int K = 1 << 20;
-    ll precalc_w[K / 2];
-    ll w[K];
-    ll p, g;
-
-    ll binpow(ll a, ll b) {
-        ll res = 1;
-        while (b) {
-            if (b & 1) res = res * a % p;
-            b >>= 1;
-            a = a * a % p;
+template<int mod>
+class Modular {
+public:
+    int val;
+    Modular() : val(0) {}
+    Modular(int new_val) : val(new_val) {
+    }
+    friend Modular operator+(const Modular &a, const Modular &b) {
+        if (a.val + b.val >= mod) return a.val + b.val - mod;
+        else return a.val + b.val;
+    }
+    friend Modular operator-(const Modular &a, const Modular &b) {
+        if (a.val - b.val < 0) return a.val - b.val + mod;
+        else return a.val - b.val;
+    }
+    friend Modular operator*(const Modular &a, const Modular &b) {
+        return 1ll * a.val * b.val % mod;
+    }
+    friend Modular binpow(Modular a, long long n) {
+        Modular res = 1;
+        for (; n; n >>= 1) {
+            if (n & 1) res *= a;
+            a *= a;
         }
         return res;
     }
-
-    void init(ll _p, ll _g) {
-        p = _p, g = _g;
-        precalc_w[0] = 1;
-        for (int i = 1; i < K / 2; i++) {
-            precalc_w[i] = precalc_w[i - 1] * g % p;
-        }
-        for (int i = 1; i < K; i *= 2) {
-            for (int j = 0; j < i; j++) {
-                w[i + j] = precalc_w[K / (2 * i) * j];
-            }
-        }
-    }
-
-    void fft(ll *in, ll *out, int n, int k = 1) {
-        if (n == 1) {
-            *out = *in;
+    /* ALTERNATIVE INVERSE FUNCTION USING EXTENDED EUCLIDEAN ALGORITHM
+    friend void gcd(int a, int b, Modular& x, Modular& y) {
+        if (a == 0) {
+            x = Modular(0);
+            y = Modular(1);
             return;
         }
-        n /= 2;
-        fft(in, out, n, 2 * k);
-        fft(in + k, out + n, n, 2 * k);
-        for (int i = 0; i < n; i++) {
-            ll t = out[i + n] * w[i + n] % p;
-            out[i + n] = out[i] - t;
-            if (out[i + n] < 0) out[i + n] += p;
-            out[i] += t;
-            if (out[i] >= p) out[i] -= p;
-        }
+        Modular x1, y1;
+        gcd(b % a, a, x1, y1);
+        x = y1 - (b / a) * x1;
+        y = x1;
     }
-
-    static void align(poly &a, poly &b) {
-        int n = a.size() + b.size() - 1;
-        while (a.size() < n) a.push_back(0);
-        while (b.size() < n) b.push_back(0);
+    friend Modular inv(const Modular& a) {
+        Modular x, y;
+        gcd(a.val, mod, x, y);
+        return x;
     }
-
-    poly eval(poly a) {
-        while (__builtin_popcount(a.size()) != 1) a.push_back(0);
-        poly res(a.size());
-        fft(a.data(), res.data(), a.size());
-        return res;
+    */
+    friend Modular inv(const Modular &a) {
+        return binpow(a, mod - 2);
     }
-
-    poly inter(poly a) {
-        int n = a.size();
-        poly inv(n);
-        fft(a.data(), inv.data(), n);
-        poly res(n);
-        for (int i = 0; i < n; i++) {
-            res[i] = inv[i] * binpow(n, p - 2) % p;
-        }
-        reverse(res.begin() + 1, res.end());
-        return res;
+    Modular operator/(const Modular &ot) const {
+        return *this * inv(ot);
     }
-
-    poly mult(poly a, poly b) {
-        align(a, b);
-        a = eval(a);
-        b = eval(b);
-        for (int i = 0; i < a.size(); i++) a[i] = a[i] * b[i] % p;
-        return inter(a);
+    Modular &operator++() {
+        if (val + 1 == mod) val = 0;
+        else ++val;
+        return *this;
     }
-} ntt[B];
-
-namespace crt {
-    LL mult(LL a, LL b, LL mod) {
-        return a * b % mod;
+    Modular operator++(int) {
+        Modular tmp = *this;
+        ++(*this);
+        return tmp;
     }
-
-    LL binpow(LL a, LL n, LL mod) {
-        LL res = 1;
-        while (n) {
-            if (n & 1) res = mult(res, a, mod);
-            a = mult(a, a, mod);
-            n >>= 1;
-        }
-        return res;
+    Modular operator+() const {
+        return *this;
     }
-
-    LL inv(LL a, LL mod) {
-        return binpow(a, mod - 2, mod);
+    Modular operator-() const {
+        return 0 - *this;
     }
-
-    LL calc(LL a, LL p) {
-        return a % p;
+    Modular &operator+=(const Modular &ot) {
+        return *this = *this + ot;
     }
-
-    LL calc(LL a, LL p, LL b, LL q) {
-        return (mult(a, inv(p % q, q), q) * p + mult(b, inv(q % p, p), p) * q) % (p * q);
+    Modular &operator-=(const Modular &ot) {
+        return *this = *this - ot;
     }
-
-    LL calc(LL a, LL p, LL b, LL q, LL c, LL r) {
-        LL ans = mult(a, inv(q * r % p, p), p) * q * r;
-        ans += mult(b, inv(p * r % q, q), q) * p * r;
-        ans += mult(c, inv(p * q % r, r), r) * p * q;
-        return ans % (p * q * r);
+    Modular &operator*=(const Modular &ot) {
+        return *this = *this * ot;
+    }
+    Modular &operator/=(const Modular &ot) {
+        return *this = *this / ot;
+    }
+    bool operator==(const Modular &ot) const {
+        return val == ot.val;
+    }
+    bool operator!=(const Modular &ot) const {
+        return val != ot.val;
+    }
+    bool operator<(const Modular &ot) const {
+        return val < ot.val;
+    }
+    bool operator>(const Modular &ot) const {
+        return val > ot.val;
+    }
+    explicit operator int() const {
+        return val;
     }
 };
 
-void init() {
-    for (int i = 0; i < B; i++) {
-        ntt[i].init(P[i], G[i]);
-    }
+template<int mod>
+istream &operator>>(istream &istr, Modular<mod> &x) {
+    return istr >> x.val;
 }
 
-const int mod = 1e9 + 7;
-
-poly mult(poly a, poly b) {
-    vector<poly> res(B);
-    for (int j = 0; j < B; j++) {
-        res[j] = ntt[j].mult(a, b);
-    }
-    poly ans(res[0].size());
-    if constexpr (B == 1) {
-        for (int i = 0; i < ans.size(); i++) {
-            ans[i] = crt::calc(res[0][i], P[0]) % mod;
-        }
-    } else if constexpr (B == 2) {
-        for (int i = 0; i < ans.size(); i++) {
-            ans[i] = crt::calc(res[0][i], P[0], res[1][i], P[1]) % mod;
-        }
-    } else {
-        for (int i = 0; i < ans.size(); i++) {
-            ans[i] = crt::calc(res[0][i], P[0], res[1][i], P[1], res[2][i], P[2]) % mod;
-        }
-    }
-    return ans;
+template<int mod>
+ostream &operator<<(ostream &ostr, const Modular<mod> &x) {
+    return ostr << x.val;
 }
+
+template <int mod = 998244353, int root = 3>
+class NTT {
+    using Mint = Modular<mod>;
+public:
+    static vector<int> mult(const vector<int>& a, const vector<int>& b) {
+        vector<Mint> amod(a.size());
+        vector<Mint> bmod(b.size());
+        for (int i = 0; i < a.size(); i++) {
+            amod[i] = a[i];
+        }
+        for (int i = 0; i < b.size(); i++) {
+            bmod[i] = b[i];
+        }
+        vector<Mint> resmod = mult(amod, bmod);
+        vector<int> res(resmod.size());
+        for (int i = 0; i < res.size(); i++) {
+            res[i] = resmod[i].val;
+        }
+        return res;
+    }
+    static vector<Mint> mult(const vector<Mint>& a, const vector<Mint>& b) {
+        int n = int(a.size()), m = int(b.size());
+        if (!n || !m) return {};
+        int lg = 0;
+        while ((1 << lg) < n + m - 1) lg++;
+        int z = 1 << lg;
+        auto a2 = a, b2 = b;
+        a2.resize(z);
+        b2.resize(z);
+        nft(false, a2);
+        nft(false, b2);
+        for (int i = 0; i < z; i++) a2[i] *= b2[i];
+        nft(true, a2);
+        a2.resize(n + m - 1);
+        Mint iz = inv(Mint(z));
+        for (int i = 0; i < n + m - 1; i++) a2[i] *= iz;
+        return a2;
+    }
+
+private:
+    static void nft(bool type, vector<Modular<mod>> &a) {
+        int n = int(a.size()), s = 0;
+        while ((1 << s) < n) s++;
+        assert(1 << s == n);
+        static vector<Mint> ep, iep;
+        while (int(ep.size()) <= s) {
+            ep.push_back(binpow(Mint(root), (mod - 1) / (1 << ep.size())));
+            iep.push_back(inv(ep.back()));
+        }
+        vector<Mint> b(n);
+        for (int i = 1; i <= s; i++) {
+            int w = 1 << (s - i);
+            Mint base = type ? iep[i] : ep[i], now = 1;
+            for (int y = 0; y < n / 2; y += w) {
+                for (int x = 0; x < w; x++) {
+                    auto l = a[y << 1 | x];
+                    auto r = now * a[y << 1 | x | w];
+                    b[y | x] = l + r;
+                    b[y | x | n >> 1] = l - r;
+                }
+                now *= base;
+            }
+            swap(a, b);
+        }
+    }
+};
 
 int main() {
     ios_base::sync_with_stdio(false);
@@ -168,10 +181,9 @@ int main() {
     freopen("input.txt", "r", stdin);
 #endif
 
-    init();
+
 
 #ifdef LOCAL_ALIKHAN
     cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
-    return 0;
 }
