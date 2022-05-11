@@ -5,6 +5,7 @@ using namespace std;
 const int C = 1e6 + 10;
 bool prime[C];
 int prime_div[C];
+vector<pair<int, int>> pf[C];
 
 void find_primes() {
     for (int i = 0; i <= C - 1; i++) {
@@ -18,6 +19,28 @@ void find_primes() {
                 for (int j = i * i; j <= C - 1; j += i) {
                     prime[j] = false;
                     prime_div[j] = i;
+                }
+            }
+        }
+    }
+    for (int i = 2; i <= C - 1; i++) {
+        if (prime[i]) {
+            pf[i] = {{i, 1}};
+        } else {
+            pf[i] = pf[i / prime_div[i]];
+            bool ok = true;
+            for (int j = 0; j < pf[i].size(); j++) {
+                if (pf[i][j].first == prime_div[i]) {
+                    ok = false;
+                    pf[i][j].second++;
+                }
+            }
+            if (ok) {
+                pf[i].emplace_back(prime_div[i], 1);
+                for (int j = int(pf[i].size()) - 1; j >= 1; j--) {
+                    if (pf[i][j - 1].first > pf[i][j].first) {
+                        swap(pf[i][j - 1], pf[i][j]);
+                    }
                 }
             }
         }
