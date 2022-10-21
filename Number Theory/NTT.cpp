@@ -2,6 +2,13 @@
 
 using namespace std;
 
+typedef long long ll;
+
+/*
+ * TESTED ON: https://judge.yosupo.jp/problem/convolution_mod
+ * 260 ms on one multiplication with n = m = 5e5
+ */
+
 template<int mod>
 class Modular {
 public:
@@ -9,15 +16,15 @@ public:
     Modular() : val(0) {}
     Modular(int new_val) : val(new_val) {
     }
-    friend Modular operator+(const Modular &a, const Modular &b) {
+    friend Modular operator+(const Modular& a, const Modular& b) {
         if (a.val + b.val >= mod) return a.val + b.val - mod;
         else return a.val + b.val;
     }
-    friend Modular operator-(const Modular &a, const Modular &b) {
+    friend Modular operator-(const Modular& a, const Modular& b) {
         if (a.val - b.val < 0) return a.val - b.val + mod;
         else return a.val - b.val;
     }
-    friend Modular operator*(const Modular &a, const Modular &b) {
+    friend Modular operator*(const Modular& a, const Modular& b) {
         return 1ll * a.val * b.val % mod;
     }
     friend Modular binpow(Modular a, long long n) {
@@ -46,13 +53,13 @@ public:
         return x;
     }
     */
-    friend Modular inv(const Modular &a) {
+    friend Modular inv(const Modular& a) {
         return binpow(a, mod - 2);
     }
-    Modular operator/(const Modular &ot) const {
+    Modular operator/(const Modular& ot) const {
         return *this * inv(ot);
     }
-    Modular &operator++() {
+    Modular& operator++() {
         if (val + 1 == mod) val = 0;
         else ++val;
         return *this;
@@ -68,28 +75,28 @@ public:
     Modular operator-() const {
         return 0 - *this;
     }
-    Modular &operator+=(const Modular &ot) {
+    Modular& operator+=(const Modular& ot) {
         return *this = *this + ot;
     }
-    Modular &operator-=(const Modular &ot) {
+    Modular& operator-=(const Modular& ot) {
         return *this = *this - ot;
     }
-    Modular &operator*=(const Modular &ot) {
+    Modular& operator*=(const Modular& ot) {
         return *this = *this * ot;
     }
-    Modular &operator/=(const Modular &ot) {
+    Modular& operator/=(const Modular& ot) {
         return *this = *this / ot;
     }
-    bool operator==(const Modular &ot) const {
+    bool operator==(const Modular& ot) const {
         return val == ot.val;
     }
-    bool operator!=(const Modular &ot) const {
+    bool operator!=(const Modular& ot) const {
         return val != ot.val;
     }
-    bool operator<(const Modular &ot) const {
+    bool operator<(const Modular& ot) const {
         return val < ot.val;
     }
-    bool operator>(const Modular &ot) const {
+    bool operator>(const Modular& ot) const {
         return val > ot.val;
     }
     explicit operator int() const {
@@ -97,13 +104,19 @@ public:
     }
 };
 
+template <int mod>
+Modular<mod> any_to_mint(ll a) {
+    a %= mod;
+    return a < 0 ? a + mod : a;
+}
+
 template<int mod>
-istream &operator>>(istream &istr, Modular<mod> &x) {
+istream& operator>>(istream& istr, Modular<mod>& x) {
     return istr >> x.val;
 }
 
 template<int mod>
-ostream &operator<<(ostream &ostr, const Modular<mod> &x) {
+ostream& operator<<(ostream& ostr, const Modular<mod>& x) {
     return ostr << x.val;
 }
 
@@ -115,10 +128,10 @@ public:
         vector<Mint> amod(a.size());
         vector<Mint> bmod(b.size());
         for (int i = 0; i < a.size(); i++) {
-            amod[i] = a[i];
+            amod[i] = any_to_mint<mod>(a[i]);
         }
         for (int i = 0; i < b.size(); i++) {
-            bmod[i] = b[i];
+            bmod[i] = any_to_mint<mod>(b[i]);
         }
         vector<Mint> resmod = mult(amod, bmod);
         vector<int> res(resmod.size());
@@ -177,13 +190,26 @@ private:
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
-#ifdef LOCAL_ALIKHAN
+#ifdef LOCAL
     freopen("input.txt", "r", stdin);
 #endif
 
+    int n, m;
+    cin >> n >> m;
+    vector<int> a(n), b(m);
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+    }
+    for (int i = 0; i < m; i++) {
+        cin >> b[i];
+    }
+    vector<int> res = NTT<998244353, 3>::mult(a, b);
+    for (int x : res) {
+        cout << x << " ";
+    }
+    cout << "\n";
 
-
-#ifdef LOCAL_ALIKHAN
+#ifdef LOCAL
     cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
 }

@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-
 struct DSU {
     static const int N = 1e6 + 10;
     int Parent[N], Rank[N], Size[N], cnt;
@@ -24,6 +23,7 @@ struct DSU {
         Size[u] += Size[v];
     }
 };
+
 
 int main() {
     ios_base::sync_with_stdio(false);
