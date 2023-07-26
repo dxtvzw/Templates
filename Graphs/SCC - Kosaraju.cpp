@@ -14,7 +14,7 @@ void add_edge(int u, int v) {
 }
 
 void dfs_inv(int v) {
-    used[v] = 1;
+    used[v] = true;
     for (int to : g[1][v]) {
         if (!used[to]) {
             dfs_inv(to);
@@ -24,7 +24,7 @@ void dfs_inv(int v) {
 }
 
 void dfs(int v, vector<int>& comp) {
-    used[v] = 1;
+    used[v] = true;
     comp.push_back(v);
     for (int to : g[0][v]) {
         if (!used[to]) {
@@ -35,7 +35,7 @@ void dfs(int v, vector<int>& comp) {
 
 void Kosaraju(int n) {
     for (int i = 1; i <= n; i++) {
-        used[i] = 0;
+        used[i] = false;
     }
     for (int i = 1; i <= n; i++) {
         if (!used[i]) {
@@ -44,7 +44,7 @@ void Kosaraju(int n) {
     }
     reverse(post.begin(), post.end());
     for (int i = 1; i <= n; i++) {
-        used[i] = 0;
+        used[i] = false;
     }
     for (int v : post) {
         if (!used[v]) {

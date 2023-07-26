@@ -9,6 +9,8 @@ public:
     Modular() : val(0) {}
     Modular(int new_val) : val(new_val) {
     }
+    Modular(long long new_val) : val(new_val % mod) {
+    }
     friend Modular operator+(const Modular& a, const Modular& b) {
         if (a.val + b.val >= mod) return a.val + b.val - mod;
         else return a.val + b.val;
