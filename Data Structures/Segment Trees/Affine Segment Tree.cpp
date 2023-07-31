@@ -21,15 +21,12 @@ struct Affine {
 
 template <typename T>
 struct affine_segment_tree {
-    static const int N = 1e5 + 10;
+    static const int N = 5e5 + 10;
     const T good_value = 0; // 0 for sum, -inf for max, and inf for min
     const Affine<T> good_affine = {};
     T a[N], t[4 * N];
     Affine<T> ch[4 * N];
-    T merge(T a, T b) {
-        return a + b;
-    }
-    void build(int v = 1, int tl = 1, int tr = N - 1) {
+    void build(int v = 1, int tl = 0, int tr = N - 1) {
         if (tl == tr) {
             t[v] = a[tl];
             return;
@@ -37,7 +34,7 @@ struct affine_segment_tree {
         int tm = (tl + tr) / 2;
         build(v + v, tl, tm);
         build(v + v + 1, tm + 1, tr);
-        t[v] = merge(t[v + v], t[v + v + 1]);
+        t[v] = t[v + v] + t[v + v + 1];
     }
     void push(int v, int tl, int tr) {
         if (ch[v] == good_affine) return;
@@ -48,7 +45,7 @@ struct affine_segment_tree {
         }
         ch[v] = good_affine;
     }
-    void update(int l, int r, Affine<T> val, int v = 1, int tl = 1, int tr = N - 1) {
+    void update(int l, int r, Affine<T> val, int v = 1, int tl = 0, int tr = N - 1) {
         push(v, tl, tr);
         if (r < tl || tr < l || l > r) return;
         if (l <= tl && tr <= r) {
@@ -59,16 +56,21 @@ struct affine_segment_tree {
         int tm = (tl + tr) / 2;
         update(l, r, val, v + v, tl, tm);
         update(l, r, val, v + v + 1, tm + 1, tr);
-        t[v] = merge(t[v + v], t[v + v + 1]);
+        t[v] = t[v + v] + t[v + v + 1];
     }
-    T get(int l, int r, int v = 1, int tl = 1, int tr = N - 1) {
+    T get(int l, int r, int v = 1, int tl = 0, int tr = N - 1) {
         push(v, tl, tr);
-        if (r < tl || tr < l || l > r) return good_value;
+        if (l > r) return good_value;
         if (l <= tl && tr <= r) return t[v];
         int tm = (tl + tr) / 2;
-        T res = merge(get(l, r, v + v, tl, tm), get(l, r, v + v + 1, tm + 1, tr));
-        t[v] = merge(t[v + v], t[v + v + 1]);
-        return res;
+        if (r <= tm) {
+            return get(l, r, v + v, tl, tm);
+        } else if (l >= tm + 1) {
+            return get(l, r, v + v + 1, tm + 1, tr);
+        } else {
+            T res = get(l, r, v + v, tl, tm) + get(l, r, v + v + 1, tm + 1, tr);
+            return res;
+        }
     }
 };
 

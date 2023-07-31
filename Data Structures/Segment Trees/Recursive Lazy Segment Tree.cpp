@@ -11,7 +11,7 @@ struct lazy_segment_tree {
     T merge(T a, T b) {
         return a + b;
     }
-    void build(int v = 1, int tl = 1, int tr = N - 1) {
+    void build(int v = 1, int tl = 0, int tr = N - 1) {
         if (tl == tr) {
             t[v] = a[tl];
             return;
@@ -30,7 +30,7 @@ struct lazy_segment_tree {
         }
         ch[v] = 0;
     }
-    void update(int l, int r, T x, int v = 1, int tl = 1, int tr = N - 1) {
+    void update(int l, int r, T x, int v = 1, int tl = 0, int tr = N - 1) {
         push(v, tl, tr);
         if (r < tl || tr < l) return;
         if (l <= tl && tr <= r) {
@@ -43,7 +43,7 @@ struct lazy_segment_tree {
         update(l, r, x, v + v + 1, tm + 1, tr);
         t[v] = merge(t[v + v], t[v + v + 1]);
     }
-    T get(int l, int r, int v = 1, int tl = 1, int tr = N - 1) {
+    T get(int l, int r, int v = 1, int tl = 0, int tr = N - 1) {
         push(v, tl, tr);
         if (r < tl || tr < l) return good_value;
         if (l <= tl && tr <= r) return t[v];

@@ -2,7 +2,10 @@
 
 using namespace std;
 
-template<int mod>
+typedef long long ll;
+
+int mod;
+
 class Modular {
 public:
     int val;
@@ -97,18 +100,15 @@ public:
     }
 };
 
-template<int mod>
-istream& operator>>(istream& istr, Modular<mod>& x) {
+istream& operator>>(istream& istr, Modular& x) {
     return istr >> x.val;
 }
 
-template<int mod>
-ostream& operator<<(ostream& ostr, const Modular<mod>& x) {
+ostream& operator<<(ostream& ostr, const Modular& x) {
     return ostr << x.val;
 }
 
-const int mod = 1000000007; // 998244353
-using Mint = Modular<mod>;
+using Mint = Modular;
 
 const int N = 2e5 + 10;
 Mint fact[N], inv_fact[N], pw2[N], pw3[N];
@@ -134,14 +134,13 @@ Mint C(int n, int k) {
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
-#ifdef LOCAL_ALIKHAN
+#ifdef LOCAL
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL_ALIKHAN
+#ifdef LOCAL
     cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
-    return 0;
 }

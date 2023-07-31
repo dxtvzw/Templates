@@ -44,7 +44,7 @@ struct segment_tree {
         }
         return res;
     }
-    void build(int v = 1, int tl = 1, int tr = N - 1) {
+    void build(int v = 1, int tl = 0, int tr = N - 1) {
         if (tl > tr) return;
         if (tl == tr) {
             t[v] = {{a[tl], 0, 0}};
@@ -55,7 +55,7 @@ struct segment_tree {
         build(v + v + 1, tm + 1, tr);
         t[v] = merge(t[v + v], t[v + v + 1]);
     }
-    int get_id(int x, int v = 1, int tl = 1, int tr = N - 1) {
+    int get_id(int x, int v = 1, int tl = 0, int tr = N - 1) {
         if (t[v].back().val < x) {
             return t[v].size();
         }
@@ -73,7 +73,7 @@ struct segment_tree {
             return lef;
         }
     }
-    int my_get(int l, int r, int id, int v = 1, int tl = 1, int tr = N - 1) {
+    int my_get(int l, int r, int id, int v = 1, int tl = 0, int tr = N - 1) {
         if (tl > tr || l > r || tl > r || l > tr || id == t[v].size()) return 0;
         if (l <= tl && tr <= r) {
             return t[v].size() - id;
@@ -81,7 +81,7 @@ struct segment_tree {
         int tm = (tl + tr) / 2;
         return my_get(l, r, t[v][id].lef, v + v, tl, tm) + my_get(l, r, t[v][id].rig, v + v + 1, tm + 1, tr);
     }
-    int get(int l, int r, int x, int v = 1, int tl = 1, int tr = N - 1) {
+    int get(int l, int r, int x, int v = 1, int tl = 0, int tr = N - 1) {
         return my_get(l, r, get_id(x, v, tl, tr), v, tl, tr);
     }
 } tree;
