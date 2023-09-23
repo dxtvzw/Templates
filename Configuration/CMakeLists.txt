@@ -16,6 +16,9 @@ target_compile_options(CPlusPlus PRIVATE "-g")
 # target_compile_options(CPlusPlus PRIVATE "-Werror")
 # target_compile_options(CPlusPlus PRIVATE "-Wextra")
 # target_compile_options(CPlusPlus PRIVATE "-Wconversion")
-target_compile_options(CPlusPlus PRIVATE "-static")
-target_compile_options(CPlusPlus PRIVATE "-Wl,--stack=268435456")
+
+# target_compile_options(CPlusPlus PRIVATE "-static")
+# target_compile_options(CPlusPlus PRIVATE "-Wl,--stack=268435456")
+target_link_options(CPlusPlus PRIVATE "-Wl,--stack,268435456")
+
 target_compile_options(CPlusPlus PRIVATE "-O2")
