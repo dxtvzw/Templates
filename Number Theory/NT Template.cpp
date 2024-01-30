@@ -34,11 +34,11 @@ struct NT {
                     x /= i;
                     t++;
                 }
-                pf.pb({i, t});
+                pf.push_back({i, t});
             }
         }
         if (x > 1) {
-            pf.pb({x, 1});
+            pf.push_back({x, 1});
         }
         return pf;
     }
@@ -77,9 +77,9 @@ struct NT {
     static T gen_prim_root(T n) {
         if (n == 2) return 2;
         T phi_n = phi(n);
-        vector<pair<int, int>> pf = prime_fact(phi_n);
+        vector<pair<T, int>> pf = prime_fact(phi_n);
         for (T g = 1; g <= n - 1; g++) {
-            bool ok = 1;
+            bool ok = true;
             for (int i = 0; i < pf.size() && ok; i++) {
                 ok &= binpow(g, phi_n / pf[i].first, n) != 1;
             }
