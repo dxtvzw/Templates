@@ -155,7 +155,7 @@ struct PolyHash {
         tree.update(pos, n, val * pw[pos - 1]);
         rev_tree.update(n - pos + 1, n, val * pw[n - pos]);
     }
-    bool is_palindrome(int l, int r) {
+    bool is_palindrome(int l, int r) { /////////////////////////////// SHOULD I MAKE l++, r++ ???????????????
         return pw[n - r] * (tree.get(r) - tree.get(l - 1)) == pw[l - 1] * (rev_tree.get(n - l + 1) - rev_tree.get(n - r));
     }
     bool cmp(int i, int j, int len) {
