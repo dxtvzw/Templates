@@ -8,6 +8,11 @@ typedef long long ll;
  * TESTED ON: https://judge.yosupo.jp/problem/convolution_mod_large
  * 130 ms on one multiplication with n = m = 5e5
  * 4400ms on one multiplication with n = m = 1.7e7
+ *
+ * TESTED ON: https://official.contest.yandex.com/ptz-winter-2024/contest/59080/run-report/106316718/
+ * 3.1 s locally -> 8.4 s in system
+ *
+ * If you want to use multiple times, clear a[] and b[] on [0, 2 * (n + m) + 5]
  */
 
 constexpr int N = 1 << 23;

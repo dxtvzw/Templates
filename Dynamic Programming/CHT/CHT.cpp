@@ -2,6 +2,8 @@
 
 using namespace std;
 
+typedef __int128_t LL;
+
 struct CHT {
     int pointer=0;
     vector<long long> K, B;
@@ -11,7 +13,7 @@ struct CHT {
         B.clear();
     }
     bool bad(int l1, int l2, int l3) {
-        return (B[l3] - B[l1]) * (K[l1] - K[l2]) < (B[l2] - B[l1]) * (K[l1] - K[l3]);
+        return LL(B[l3] - B[l1]) * (K[l1] - K[l2]) < LL(B[l2] - B[l1]) * (K[l1] - K[l3]);
     }
     void add(long long k, long long b) {
         if (!K.empty() && K.back() == k) return;
