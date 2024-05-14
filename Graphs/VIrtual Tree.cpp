@@ -58,7 +58,7 @@ void init(int n) {
     }
 }
 
-void init_vir(const vector<int>& all) {
+void init_vir(const vector<int>& all) { // call after solving current subgraph
     for (int v : all) {
         par_vir[v] = 0;
         g_vir[v].clear();
@@ -115,7 +115,7 @@ pair<vector<int>, int> get_virtual_tree(const vector<int>& vers) {
     all.erase(unique(all.begin(), all.end()), all.end());
 
     for (int v : all) {
-        assert(g_vir[v].empty() && par_vir[v] == 0);
+        assert(g_vir[v].empty() && par_vir[v] == 0); // or clean it yourself
     }
 
     vector<pair<int, int>> scn;
@@ -146,6 +146,12 @@ pair<vector<int>, int> get_virtual_tree(const vector<int>& vers) {
     return {all, root};
 }
 
+void dfs_vir(int v) { // dfs example
+    for (int to : g_vir[v]) {
+        dfs_vir(to);
+    }
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -153,7 +159,17 @@ int main() {
     freopen("input.txt", "r", stdin);
 #endif
 
+    precalc_lca();
 
+    for (int iter = 1; iter <= 10; iter++) {
+        vector<int> vers = {1, 4, 6, 10};
+        auto [all, root] = get_virtual_tree(vers);
+
+        // solve problem
+        dfs_vir(root);
+
+        init_vir(all);
+    }
 
 #ifdef LOCAL
     cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
