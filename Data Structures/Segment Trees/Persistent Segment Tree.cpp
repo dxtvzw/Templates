@@ -7,8 +7,8 @@ struct persistent_segment_tree {
     static const int N = 2e5 + 10;
     static const int L = 20;
     static const int S = N * L;
-    const int inf = 1e9;
-    const int good_value = 0;
+    const T inf = 1e9;
+    const T good_value = 0;
 
     T t[S];
     int lef[S], rig[S];
@@ -23,7 +23,7 @@ struct persistent_segment_tree {
         }
         sz = rt = 0;
     }
-    int merge(int a, int b) {
+    T merge(T a, T b) {
         return a + b;
     }
     int copy(int v) {
@@ -50,7 +50,7 @@ struct persistent_segment_tree {
         }
         t[v] = merge(t[lef[v]], t[rig[v]]);
     }
-    int my_get(int l, int r, int v, int tl = 0, int tr = N - 1) {
+    T my_get(int l, int r, int v, int tl = 0, int tr = N - 1) {
         if (l > r || tl > r || l > tr) return good_value;
         if (l <= tl && tr <= r) return t[v];
         int tm = (tl + tr) / 2;
