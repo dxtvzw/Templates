@@ -2,9 +2,11 @@
 
 using namespace std;
 
+typedef long long ll;
+
 // ==================== WARNING ====================
 // SPARSE TABLE N MUST BE 2X BIGGER THAN GRAPH N (because of euler tour)
-// tested on: https://codeforces.com/contest/1320/submission/260980762
+// tested on: https://codeforces.com/contest/1320/submission/260980762 + stress test
 
 enum TableType { VAL, ARG };
 
@@ -35,6 +37,34 @@ const int N = 2e5 + 10;
 int depth[N], in[N], out[N];
 vector<int> g[N];
 vector<int> tour;
+
+int par_vir[N];
+vector<int> g_vir[N];
+bool flag_vir[N];
+
+void init(int n) {
+    for (int i = 1; i <= n; i++) {
+        depth[i] = 0;
+        in[i] = 0;
+        out[i] = 0;
+        g[i].clear();
+    }
+    tour.clear();
+
+    for (int i = 1; i <= n; i++) {
+        par_vir[i] = 0;
+        g_vir[i].clear();
+        flag_vir[i] = false;
+    }
+}
+
+void init_vir(const vector<int>& all) {
+    for (int v : all) {
+        par_vir[v] = 0;
+        g_vir[v].clear();
+        flag_vir[v] = false;
+    }
+}
 
 void dfs_lca(int v = 1, int p = 1) {
     in[v] = tour.size();
@@ -68,17 +98,64 @@ void precalc_lca(int root = 1) {
     table.build(tour.size());
 }
 
+pair<vector<int>, int> get_virtual_tree(const vector<int>& vers) {
+    vector<pair<int, int>> ord;
+    for (int v : vers) {
+        ord.emplace_back(in[v], v);
+    }
+    sort(ord.begin(), ord.end());
+    ord.erase(unique(ord.begin(), ord.end()), ord.end());
+    vector<int> all = vers;
+    for (int i = 0; i + 1 < ord.size(); i++) {
+        int u = ord[i].second;
+        int v = ord[i + 1].second;
+        all.push_back(lca(u, v));
+    }
+    sort(all.begin(), all.end());
+    all.erase(unique(all.begin(), all.end()), all.end());
+
+    for (int v : all) {
+        assert(g_vir[v].empty() && par_vir[v] == 0);
+    }
+
+    vector<pair<int, int>> scn;
+    for (int v : all) {
+        scn.emplace_back(in[v], v);
+        scn.emplace_back(out[v], v);
+    }
+    sort(scn.begin(), scn.end());
+    stack<int> st;
+    for (auto [t, v] : scn) {
+        if (!flag_vir[v]) {
+            st.push(v);
+        } else {
+            st.pop();
+            par_vir[v] = st.empty() ? 0 : st.top();
+            if (par_vir[v]) {
+                g_vir[par_vir[v]].push_back(v);
+            }
+        }
+        flag_vir[v] ^= 1;
+    }
+    int root = 0;
+    for (int v : all) {
+        if (par_vir[v] == 0) {
+            root = v;
+        }
+    }
+    return {all, root};
+}
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
-#ifdef LOCAL_ALIKHAN
+#ifdef LOCAL
     freopen("input.txt", "r", stdin);
 #endif
 
 
 
-#ifdef LOCAL_ALIKHAN
+#ifdef LOCAL
     cout << "\nTime elapsed: " << double(clock()) / CLOCKS_PER_SEC << " s.\n";
 #endif
-    return 0;
 }
