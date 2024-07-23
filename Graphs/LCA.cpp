@@ -14,7 +14,7 @@ void dfs_lca(int v = 1, int p = 1) {
     in[v] = ++timer;
     up[v][0] = p;
     for (int i = 1; i < L; i++) {
-        up[v][i] = up[up[v][i-1]][i-1];
+        up[v][i] = up[up[v][i - 1]][i - 1];
     }
     for (int to : g[v]) {
         if (to != p) {
