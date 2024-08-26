@@ -104,12 +104,6 @@ public:
     }
 };
 
-template <int mod>
-Modular<mod> any_to_mint(ll a) {
-    a %= mod;
-    return a < 0 ? a + mod : a;
-}
-
 template<int mod>
 istream& operator>>(istream& istr, Modular<mod>& x) {
     return istr >> x.val;
@@ -118,6 +112,12 @@ istream& operator>>(istream& istr, Modular<mod>& x) {
 template<int mod>
 ostream& operator<<(ostream& ostr, const Modular<mod>& x) {
     return ostr << x.val;
+}
+
+template <int mod>
+Modular<mod> any_to_mint(ll a) {
+    a %= mod;
+    return a < 0 ? a + mod : a;
 }
 
 template <int mod = 998244353, int root = 3>
