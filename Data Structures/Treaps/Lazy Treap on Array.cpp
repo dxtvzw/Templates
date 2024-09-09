@@ -95,8 +95,7 @@ int merge(int t1, int t2) {
     if (nodes[t1].prio < nodes[t2].prio) {
         res = t1;
         nodes[res].r = merge(nodes[t1].r, t2);
-    }
-    else {
+    } else {
         res = t2;
         nodes[res].l = merge(t1, nodes[t2].l);
     }
@@ -114,14 +113,12 @@ pair<int, int> split(int t, int k) {
     push(t);
     if (sz(t) <= k) {
         return {t, 0};
-    }
-    else if (sz(nodes[t].l) + 1 <= k) {
+    } else if (sz(nodes[t].l) + 1 <= k) {
         auto [lef, rig] = split(nodes[t].r, k - sz(nodes[t].l) - 1);
         nodes[t].r = lef;
         recalc(t);
         return {t, rig};
-    }
-    else {
+    } else {
         auto [lef, rig] = split(nodes[t].l, k);
         nodes[t].l = rig;
         recalc(t);
@@ -142,11 +139,6 @@ pair<int, int> split_less(int t, idx_type idx) {
     push(t);
     if (t == 0) {
         return {0, 0};
-    } else if (nodes[t].idx == idx) {
-        int mem = nodes[t].l;
-        nodes[t].l = 0;
-        recalc(t);
-        return {mem, t};
     } else if (nodes[t].idx < idx) {
         auto [lef, rig] = split_less(nodes[t].r, idx);
         nodes[t].r = lef;
