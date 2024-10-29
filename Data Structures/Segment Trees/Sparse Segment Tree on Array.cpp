@@ -5,6 +5,8 @@ using namespace std;
 /*
     tested on:
         https://codeforces.com/gym/103091/problem/G
+
+    FIX MIDDLE TM = (TL + TR) / 2 (TL = -1, TR = 0 RESULTS IN INFINITE LOOP)
 */
 
 template <typename Value, typename Range>
